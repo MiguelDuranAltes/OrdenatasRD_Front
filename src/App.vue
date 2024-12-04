@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container-fluid">
-      <router-link class="navbar-brand" to="/notes"> Notebook 2024/2025 </router-link>
+      <router-link class="navbar-brand" to="/products"> OrdenatasRD 2024/2025 </router-link>
       <button
         class="navbar-toggler"
         type="button"
@@ -33,8 +33,8 @@
             </a>
             <ul class="dropdown-menu">
               <li>
-                <router-link class="dropdown-item" to="/notes" active-class="active"
-                  >Lista de notas</router-link
+                <router-link class="dropdown-item" to="/products" active-class="active"
+                  >Lista de productos</router-link
                 >
               </li>
               <li>
@@ -82,7 +82,7 @@ export default {
   watch: {
     $route(newValue) {
       if (this.store.state.user.logged) {
-        if (["NoteList", "NoteListSetup"].includes(newValue.name)) {
+        if (["ProductList", "ProductListSetup"].includes(newValue.name)) {
           this.$refs.dropdownElement.classList.add("active");
         } else {
           this.$refs.dropdownElement.classList.remove("active");

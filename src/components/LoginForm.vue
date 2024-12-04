@@ -31,7 +31,7 @@ export default {
           login: this.auxLogin,
           password: this.auxPass
         });
-        this.$router.push("/notes");
+        this.$router.push("/products");
       } catch (e) {
         console.error(e);
         if (e.response?.data?.message) {

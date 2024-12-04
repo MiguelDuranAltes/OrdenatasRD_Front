@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
 import AboutView from "../views/AboutView.vue";
-import NoteList from "../components/NoteList.vue";
-import NoteForm from "../components/NoteForm.vue";
-import NoteDetail from "../components/NoteDetail.vue";
 import ErrorNotFoundView from "../views/ErrorNotFoundView.vue";
 import LoginForm from "../components/LoginForm.vue";
+import ProductList from "../components/ProductList.vue";
+import ProductDetail from "../components/ProductDetail.vue";
 
 import auth from "@/common/auth";
 import { getStore } from "@/common/store";
@@ -22,9 +21,14 @@ const routes = [
     component: AboutView
   },
   {
-    path: "/notes",
-    name: "NoteList",
-    component: NoteList
+    path: "/products",
+    name: "ProductList",
+    component: ProductList
+  },
+  {
+    path: "/products/:productId",
+    name: "ProductDetail",
+    component: ProductDetail
   },
   // /notes/new debe colocarse antes de /notes/:id porque si no vue-router
   // interpreta "new" como si fuera el id.
@@ -32,21 +36,7 @@ const routes = [
   // Una forma de evitar este problema es usar una expresión regular para
   // limitar los valores que son interpretados. Por ejemplo, usando el path
   // /notes/:id(\\d+), vue-router espera que :id sea numérico.
-  {
-    path: "/notes/new",
-    name: "NoteCreate",
-    component: NoteForm
-  },
-  {
-    path: "/notes/:noteId",
-    name: "NoteDetail",
-    component: NoteDetail
-  },
-  {
-    path: "/notes/:noteId/edit",
-    name: "NoteEdit",
-    component: NoteForm
-  },
+
   {
     path: "/:catchAll(.*)*",
     component: ErrorNotFoundView,
@@ -91,7 +81,7 @@ router.beforeEach((to, from, next) => {
       // página pública
       if (userIsLogged && to.meta.isLoginPage) {
         // si estamos logueados no hace falta volver a mostrar el login
-        next({ name: "NoteList", replace: true });
+        next({ name: "ProductList", replace: true });
       } else {
         next();
       }
