@@ -4,6 +4,8 @@ import ErrorNotFoundView from "../views/ErrorNotFoundView.vue";
 import LoginForm from "../components/LoginForm.vue";
 import ProductList from "../components/ProductList.vue";
 import ProductDetail from "../components/ProductDetail.vue";
+import RegisterForm from "../components/RegisterForm.vue";
+import ProductForm from "../components/ProductForm.vue";
 
 import auth from "@/common/auth";
 import { getStore } from "@/common/store";
@@ -14,6 +16,12 @@ const routes = [
     name: "Login",
     component: LoginForm,
     meta: { public: true, isLoginPage: true }
+  },
+  {
+    path: "/register",
+    name: "Register",
+    component: RegisterForm,
+    meta: { public: true }
   },
   {
     path: "/about",
@@ -29,6 +37,12 @@ const routes = [
     path: "/products/:productId",
     name: "ProductDetail",
     component: ProductDetail
+  },
+  {
+    path: "/products/:productId/edit",
+    name: "ProductEdit",
+    component: ProductForm,
+    meta: { authority: "ADMIN" }
   },
   // /notes/new debe colocarse antes de /notes/:id porque si no vue-router
   // interpreta "new" como si fuera el id.

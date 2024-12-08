@@ -1,16 +1,15 @@
 <template>
-  <div class="login-container">
-    <div class="login-card">
-      <h1 class="login-title">Iniciar Sesión</h1>
-      <form @submit.prevent="autenticarme" class="login-form">
+  <div class="register-container">
+    <div class="register-card">
+      <h1 class="register-title">Crear Cuenta</h1>
+      <form class="register-form" @submit.prevent="registrarme">
         <div class="form-group">
           <label for="login" class="form-label">Login:</label>
           <input
             type="text"
             id="login"
-            v-model="auxLogin"
             class="form-input"
-            @keyup.enter="autenticarme"
+            v-model="auxLogin"
             placeholder="Introduce tu usuario"
             required
           />
@@ -20,54 +19,86 @@
           <input
             type="password"
             id="pass"
-            v-model="auxPass"
             class="form-input"
-            @keyup.enter="autenticarme"
+            v-model="auxPass"
             placeholder="Introduce tu contraseña"
             required
           />
         </div>
         <div class="form-group">
-          <button type="submit" class="login-button">Iniciar Sesión</button>
+          <label for="passConfirm" class="form-label">Confirmar Password:</label>
+          <input
+            type="password"
+            id="passConfirm"
+            class="form-input"
+            v-model="auxPassConfirm"
+            placeholder="Confirma tu contraseña"
+            required
+          />
+        </div>
+        <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+        <div class="form-group">
+          <button type="submit" class="register-button">Registrarse</button>
         </div>
         <div class="form-group">
-          <button type="button" class="register-button" @click="registrarme">Crear Cuenta</button>
+          <button type="button" class="back-button" @click="volverAtras">Volver</button>
         </div>
       </form>
-      <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
   </div>
 </template>
 
 <script>
 import auth from "../common/auth.js";
+import AccountRepository from "@/repositories/AccountRepository.js";
 
 export default {
   data() {
     return {
       auxLogin: null,
       auxPass: null,
+      auxPassConfirm: null,
       errorMessage: null
     };
   },
   methods: {
-    async autenticarme() {
-      if (this.auxLogin == null || this.auxPass == null) {
-        this.errorMessage = "Por favor, completa todos los campos.";
+    async registrarme() {
+      this.errorMessage = null;
+
+      if (this.auxPass !== this.auxPassConfirm) {
+        this.errorMessage = "Las contraseñas no coinciden";
         return;
       }
+      if (this.auxLogin.length < 4) {
+        this.errorMessage = "El login de usuario debe tener al menos 4 caracteres";
+        return;
+      }
+      if (this.auxPass.length < 4) {
+        this.errorMessage = "La contraseña debe tener al menos 4 caracteres";
+        return;
+      }
+
       try {
-        await auth.login({
-          login: this.auxLogin,
-          password: this.auxPass
-        });
+        const user = { login: this.auxLogin, password: this.auxPass };
+        await AccountRepository.registerAccount(user);
+        await this.autenticarme();
         this.$router.push("/products");
       } catch (e) {
-        this.errorMessage = "No se pudo iniciar sesión, revisa tus credenciales.";
+        console.error(e);
+        this.errorMessage = e.response?.data?.message || "Error durante el registro.";
       }
     },
-    registrarme() {
-      this.$router.push("/register");
+    async autenticarme() {
+      try {
+        await auth.login({ login: this.auxLogin, password: this.auxPass });
+      } catch (e) {
+        console.error(e);
+        this.errorMessage = e.response?.data?.message || "Error al iniciar sesión.";
+        this.$router.push("/");
+      }
+    },
+    volverAtras() {
+      this.$router.push("/");
     }
   }
 };
@@ -75,17 +106,17 @@ export default {
 
 <style scoped>
 /* Contenedor general */
-.login-container {
+.register-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 93.5vh; /* 90% de la altura de la ventana*/
+  height: 93.5vh; /* Toda la altura de la ventana */
   background: linear-gradient(135deg, #2f135a, #0b8032);
   padding: 20px;
 }
 
 /* Tarjeta flotante */
-.login-card {
+.register-card {
   background-color: #ffffff;
   border-radius: 16px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
@@ -96,7 +127,7 @@ export default {
   animation: fadeIn 0.5s ease-in-out;
 }
 
-/* Animación para la tarjeta */
+/* Animación */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -109,7 +140,7 @@ export default {
 }
 
 /* Título */
-.login-title {
+.register-title {
   font-size: 28px;
   font-weight: bold;
   margin-bottom: 20px;
@@ -117,7 +148,7 @@ export default {
 }
 
 /* Formulario */
-.login-form {
+.register-form {
   display: flex;
   flex-direction: column;
 }
@@ -154,8 +185,8 @@ export default {
 }
 
 /* Botones */
-.login-button,
-.register-button {
+.register-button,
+.back-button {
   width: 100%;
   padding: 12px;
   font-size: 16px;
@@ -167,20 +198,20 @@ export default {
   transition: all 0.3s;
 }
 
-.login-button {
+.register-button {
   background: linear-gradient(135deg, #11947c, #032de9);
 }
 
-.login-button:hover {
+.register-button:hover {
   background: linear-gradient(135deg, #085143, #02248a);
 }
 
-.register-button {
-  background: linear-gradient(135deg, #a753aa, #dd0bba);
+.back-button {
+  background: linear-gradient(135deg, #d9534f, #b52b27);
 }
 
-.register-button:hover {
-  background: linear-gradient(135deg, #8d3776, #600534);
+.back-button:hover {
+  background: linear-gradient(135deg, #a73531, #801f1b);
 }
 
 /* Mensaje de error */
