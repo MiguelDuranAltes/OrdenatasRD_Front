@@ -8,6 +8,7 @@ import RegisterForm from "../components/RegisterForm.vue";
 import ProductForm from "../components/ProductForm.vue";
 import ProductListByBrand from "../components/ProductListByBrand.vue";
 
+import ShowUsers from "@/components/ShowUsers.vue";
 import auth from "@/common/auth";
 import { getStore } from "@/common/store";
 
@@ -43,6 +44,12 @@ const routes = [
     path: "/products/:productId/edit",
     name: "ProductEdit",
     component: ProductForm,
+    meta: { authority: "ADMIN" }
+  },
+  {
+    path: "/users",
+    name: "ShowUsers",
+    component: ShowUsers,
     meta: { authority: "ADMIN" }
   },
   {
