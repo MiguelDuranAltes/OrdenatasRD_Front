@@ -44,6 +44,11 @@
               </li>
             </ul>
           </li>
+          <li class="nav-item">
+            <router-link v-if="auth.isAdmin()" class="btn btn-success btn-sm" :to="'/users'">
+              Lista Usuarios
+            </router-link>
+          </li>
         </ul>
 
         <span v-if="store.state.user.logged"> autenticado como {{ store.state.user.login }} </span>
@@ -70,6 +75,7 @@ import auth from "./common/auth";
 export default {
   data() {
     return {
+      auth: auth,
       store: getStore()
     };
   },

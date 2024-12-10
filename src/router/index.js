@@ -7,6 +7,7 @@ import ProductDetail from "../components/ProductDetail.vue";
 import RegisterForm from "../components/RegisterForm.vue";
 import ProductForm from "../components/ProductForm.vue";
 
+import ShowUsers from "@/components/ShowUsers.vue";
 import auth from "@/common/auth";
 import { getStore } from "@/common/store";
 
@@ -42,6 +43,12 @@ const routes = [
     path: "/products/:productId/edit",
     name: "ProductEdit",
     component: ProductForm,
+    meta: { authority: "ADMIN" }
+  },
+  {
+    path: "/users",
+    name: "ShowUsers",
+    component: ShowUsers,
     meta: { authority: "ADMIN" }
   },
   // /notes/new debe colocarse antes de /notes/:id porque si no vue-router
