@@ -29,7 +29,7 @@
               aria-expanded="false"
               ref="dropdownElement"
             >
-              Notas
+              Productos
             </a>
             <ul class="dropdown-menu">
               <li>

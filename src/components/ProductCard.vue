@@ -3,7 +3,12 @@
     <div class="card-body">
       <h5 class="card-title">{{ product.name }}</h5>
 
-      <p class="card-text text-muted">Marca: {{ product.brand }}</p>
+      <p class="card-text text-muted">
+        Marca:
+        <router-link :to="{ name: 'ProductListByBrand', params: { brand: product.brand } }">{{
+          product.brand
+        }}</router-link>
+      </p>
       <p class="card-text price">{{ product.price }} €</p>
 
       <p :class="['card-text', product.availability ? 'text-success' : 'text-danger']">

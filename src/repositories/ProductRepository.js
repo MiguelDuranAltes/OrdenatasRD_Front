@@ -12,5 +12,8 @@ export default {
   },
   async save(product) {
     return (await HTTP.put(`${resource}/${product.id}`, product)).data;
+  },
+  async findByBrand(brand) {
+    return (await HTTP.get(`${resource}/brand/${brand}`)).data;
   }
 };
