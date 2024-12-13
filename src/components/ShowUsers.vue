@@ -6,7 +6,7 @@
         <div class="card mb-4">
           <div class="card-body text-center">
             <h5 class="card-title" style="color: blue">
-              <router-link class="card-link" :to="'/user/' + user.id">
+              <router-link class="card-link" :to="'/users/' + user.id">
                 {{ user.login }}
               </router-link>
             </h5>

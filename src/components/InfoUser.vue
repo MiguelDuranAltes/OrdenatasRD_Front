@@ -1,0 +1,165 @@
+<template>
+  <div v-if="user" class="user-info-container">
+    <!--IMAGEN-->
+
+    <div class="user-info">
+      <div class="user-detail">
+        <div class="info-item flex-column align-items-start">
+          <div class="label">Login:</div>
+          <div class="value">{{ user.login }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="payMethods && payMethods.length && adresses && adresses.length" class="d-flex">
+      <div class="card pay-Adress-card flex-item">
+        <div class="card-body">
+          <!-- Desplegable -->
+          <label for="adress-select" class="form-label">Direcciones</label>
+          <select id="adress-select" v-model="selectedAdressId" class="form-select">
+            <option v-for="adress in adresses" :key="adress.id" :value="adress.id">
+              {{ adress.street }}, {{ adress.door }} {{ adress.portal }}
+            </option>
+
+            <button
+              v-if="!isAdmin"
+              class="btn"
+              style="margin: 10px; color: chocolate"
+              @click="borrarAdress(selectedAdressId)"
+            >
+              Borrar
+            </button>
+          </select>
+        </div>
+      </div>
+
+      <div class="card pay-Adress-card flex-item">
+        <div class="card-body">
+          <!-- Desplegable -->
+          <label for="adress-select" class="form-label">Métodos de Pago</label>
+          <select id="adress-select" v-model="selectedMethodId" class="form-select">
+            <option v-for="method in payMethods" :key="method.id" :value="method.id">
+              {{ method.hiddenCardNumber }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import auth from "@/common/auth.js";
+import AdressesRepository from "@/repositories/AdressesRepository";
+import PaymentMReporsitory from "@/repositories/PaymentMReporsitory";
+import UsersRepository from "@/repositories/UsersRepository";
+
+export default {
+  data() {
+    return {
+      user: null,
+      payMethods: [],
+      adresses: [],
+      selectedAdressId: null,
+      selectedMethodId: null,
+      isAdmin: auth.isAdmin()
+    };
+  },
+  async mounted() {
+    this.user = await UsersRepository.findById(this.$route.params.userId);
+    this.payMethods = await PaymentMReporsitory.findAll(this.$route.params.userId);
+    this.adresses = await AdressesRepository.findAll(this.$route.params.userId);
+    if (this.adresses.length > 0) {
+      this.selectedAdressId = this.adresses[0].id;
+    }
+    if (this.payMethods.length > 0) {
+      this.selectedMethodId = this.payMethods[0].id;
+    }
+  },
+  computed: {
+    // Obtener la dirección seleccionada basada en el ID
+    selectedAdress() {
+      return this.adresses.find((adress) => adress.id === this.selectedAdressId) || {};
+    },
+    selectedMethod() {
+      return this.payMethods.find((method) => method.id === this.selectedMethodId) || {};
+    }
+  },
+  methods: {
+    borrarAdress() {
+      AdressesRepository.delete(this.selectedAdressId);
+      this.adresses = this.adresses.filter((adress) => adress.id !== this.selectedAdressId);
+      this.selectedAdressId = this.adresses[0].id;
+    }
+  }
+};
+</script>
+<style scoped>
+.d-flex {
+  display: flex;
+  justify-content: center; /* Centrar los componentes horizontalmente */
+  align-items: flex-start; /* Alinear los componentes con la parte superior */
+  gap: 20px; /* Espacio entre las tarjetas */
+  margin-top: 40px; /* Separación del componente superior */
+}
+
+.flex-item {
+  flex: 1; /* Ambos elementos ocuparán el mismo espacio */
+  max-width: 300px;
+}
+.user-info-container {
+  background-color: #f4f6f9; /* Fondo suave y limpio */
+  padding: 30px;
+  border-radius: 10px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1); /* Sombra más suave para profundidad */
+  max-width: 900px;
+  margin: 40px auto;
+  text-align: center;
+}
+
+.user-info {
+  background-color: #fff;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  max-width: 250px;
+  margin: 0 auto;
+}
+
+.user-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.pay-Adress-card {
+  width: 100%;
+  max-width: 18rem;
+  border: 1px solid #0fcc71;
+  border-radius: 8px;
+  overflow: hidden;
+  transition:
+    transform 0.3s,
+    box-shadow 0.3s;
+}
+
+.info-item {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  font-size: 1.1rem;
+  color: #555;
+  gap: 8px;
+}
+
+.label {
+  font-weight: bold;
+  color: #333;
+  width: 40%; /* Etiquetas con mayor ancho */
+}
+
+.value {
+  color: #007bff;
+  font-weight: 300;
+  width: 40%;
+}
+</style>

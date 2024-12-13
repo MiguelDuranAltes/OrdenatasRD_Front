@@ -11,6 +11,7 @@ import ProductListByBrand from "../components/ProductListByBrand.vue";
 import ShowUsers from "@/components/ShowUsers.vue";
 import auth from "@/common/auth";
 import { getStore } from "@/common/store";
+import InfoUser from "@/components/InfoUser.vue";
 
 const routes = [
   {
@@ -51,6 +52,11 @@ const routes = [
     name: "ShowUsers",
     component: ShowUsers,
     meta: { authority: "ADMIN" }
+  },
+  {
+    path: "/users/:userId",
+    name: "InfoUser",
+    component: InfoUser
   },
   {
     path: "/products/brands/:brand",

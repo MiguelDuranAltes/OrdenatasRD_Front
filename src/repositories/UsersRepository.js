@@ -6,5 +6,9 @@ export default {
   async findAll() {
     const response = await HTTP.get(`${resource}`);
     return response.data;
+  },
+  async findById(id) {
+    const response = await HTTP.get(`${resource}/${id}`);
+    return response.data;
   }
 };

@@ -49,6 +49,12 @@
               Lista Usuarios
             </router-link>
           </li>
+
+          <li class="nav-item">
+            <router-link class="btn btn-success btn-sm" :to="'/users/' + store.state.user.id">
+              User Info
+            </router-link>
+          </li>
         </ul>
 
         <span v-if="store.state.user.logged"> autenticado como {{ store.state.user.login }} </span>
