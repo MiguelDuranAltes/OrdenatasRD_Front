@@ -9,6 +9,12 @@
               <router-link class="card-link" :to="'/users/' + user.id">
                 {{ user.login }}
               </router-link>
+              <button v-if="!user.blocked" class="btn btn-aceptar" @click="changeBlocked(user)">
+                Bloquear
+              </button>
+              <button v-if="user.blocked" class="btn btn-cancelar" @click="changeBlocked(user)">
+                Desloquear
+              </button>
             </h5>
           </div>
         </div>
@@ -28,40 +34,17 @@ export default {
   },
   async mounted() {
     this.users = await UsersRepository.findAll();
+  },
+  methods: {
+    async changeBlocked(user) {
+      await UsersRepository.changeBlock(user);
+      this.users = await UsersRepository.findAll();
+    }
   }
 };
 </script>
 
 <style scoped>
-/* Estilo para el fondo oscuro */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000; /* Asegura que el modal esté sobre el contenido */
-}
-/*Estilo para la caja blanca en el centro*/
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 10px;
-  text-align: center;
-  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-  max-width: 400px;
-  width: 100%;
-}
-/* Estilo para los botones */
-.modal-buttons {
-  margin-top: 20px;
-  display: flex;
-  justify-content: space-around;
-}
 .btn-aceptar {
   background-color: red;
   color: white;
@@ -70,9 +53,7 @@ export default {
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-}
-.btn-aceptar:hover {
-  background-color: darkred;
+  margin: 10px 20px;
 }
 .btn-cancelar {
   background-color: grey;
@@ -82,8 +63,6 @@ export default {
   border-radius: 5px;
   cursor: pointer;
   font-size: 16px;
-}
-.btn-cancelar:hover {
-  background-color: darkgray;
+  margin: 10px 20px;
 }
 </style>

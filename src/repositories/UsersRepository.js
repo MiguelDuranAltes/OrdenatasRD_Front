@@ -10,5 +10,12 @@ export default {
   async findById(id) {
     const response = await HTTP.get(`${resource}/${id}`);
     return response.data;
+  },
+  async changeBlock(user) {
+    if (user.blocked) {
+      return await HTTP.delete(`${resource}/${user.id}/block`);
+    } else {
+      return await HTTP.put(`${resource}/${user.id}/block`);
+    }
   }
 };

@@ -45,13 +45,22 @@
             </ul>
           </li>
           <li class="nav-item">
-            <router-link v-if="auth.isAdmin()" class="btn btn-success btn-sm" :to="'/users'">
+            <router-link
+              v-if="auth.isAdmin()"
+              class="btn btn-success btn-sm"
+              :to="'/users'"
+              style="margin: 5px 20px"
+            >
               Lista Usuarios
             </router-link>
           </li>
 
           <li class="nav-item">
-            <router-link class="btn btn-success btn-sm" :to="'/users/' + store.state.user.id">
+            <router-link
+              class="btn btn-success btn-sm"
+              style="margin: 5px 20px"
+              :to="'/users/' + store.state.user.id"
+            >
               User Info
             </router-link>
           </li>

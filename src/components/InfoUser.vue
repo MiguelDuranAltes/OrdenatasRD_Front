@@ -20,16 +20,21 @@
             <option v-for="adress in adresses" :key="adress.id" :value="adress.id">
               {{ adress.street }}, {{ adress.door }} {{ adress.portal }}
             </option>
-
-            <button
-              v-if="!isAdmin"
-              class="btn"
-              style="margin: 10px; color: chocolate"
-              @click="borrarAdress(selectedAdressId)"
-            >
-              Borrar
-            </button>
           </select>
+          <span
+            v-if="selectedAdressId"
+            @click="deleteAdress"
+            style="
+              cursor: pointer;
+              color: red;
+              text-decoration: underline;
+              margin-top: 10px;
+              display: inline-block;
+            "
+          >
+            Delete
+          </span>
+          <button class="btn btn-primary btn-sm" @click="addNewAddress">Add New</button>
         </div>
       </div>
 
@@ -42,6 +47,20 @@
               {{ method.hiddenCardNumber }}
             </option>
           </select>
+          <span
+            v-if="selectedMethodId"
+            @click="deletePayMethod"
+            style="
+              cursor: pointer;
+              color: red;
+              text-decoration: underline;
+              margin-top: 10px;
+              display: inline-block;
+            "
+          >
+            Delete
+          </span>
+          <button class="btn btn-primary btn-sm" @click="addNewMethod">Add New</button>
         </div>
       </div>
     </div>
@@ -161,5 +180,10 @@ export default {
   color: #007bff;
   font-weight: 300;
   width: 40%;
+}
+
+.btn-sm {
+  font-size: 0.9rem;
+  margin: 10px 10px;
 }
 </style>
