@@ -54,6 +54,7 @@ async function _authenticate() {
   const store = getStore();
   store.state.user.login = response.login;
   store.state.user.authority = response.authority;
+  store.state.user.id = response.id;
   store.state.user.logged = true;
   return store.state.user;
 }

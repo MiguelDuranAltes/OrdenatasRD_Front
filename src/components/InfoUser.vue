@@ -22,7 +22,7 @@
             </option>
           </select>
           <span
-            v-if="selectedAdressId"
+            v-if="selectedAdressId && !isAdmin"
             @click="deleteAdress"
             style="
               cursor: pointer;
@@ -34,7 +34,9 @@
           >
             Delete
           </span>
-          <button class="btn btn-primary btn-sm" @click="addNewAddress">Add New</button>
+          <button v-if="!isAdmin" class="btn btn-primary btn-sm" @click="addNewAddress">
+            Add New
+          </button>
         </div>
       </div>
 
@@ -48,7 +50,7 @@
             </option>
           </select>
           <span
-            v-if="selectedMethodId"
+            v-if="selectedMethodId && !isAdmin"
             @click="deletePayMethod"
             style="
               cursor: pointer;
@@ -60,7 +62,9 @@
           >
             Delete
           </span>
-          <button class="btn btn-primary btn-sm" @click="addNewMethod">Add New</button>
+          <button v-if="!isAdmin" class="btn btn-primary btn-sm" @click="addNewMethod">
+            Add New
+          </button>
         </div>
       </div>
     </div>
