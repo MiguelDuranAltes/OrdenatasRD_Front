@@ -1,12 +1,12 @@
 <template>
-  <div v-if="user" class="user-info-container">
+  <div class="user-info-container">
     <!--IMAGEN-->
 
     <div class="user-info">
       <div class="user-detail">
         <div class="info-item flex-column align-items-start">
           <div class="label">Login:</div>
-          <div class="value">{{ user.login }}</div>
+          <div class="value">{{ this.login }}</div>
         </div>
       </div>
     </div>
@@ -74,12 +74,14 @@
 <script>
 import auth from "@/common/auth.js";
 import AdressesRepository from "@/repositories/AdressesRepository";
-import PaymentMReporsitory from "@/repositories/PaymentMReporsitory";
-import UsersRepository from "@/repositories/UsersRepository";
+import PaymentMRepository from "@/repositories/PaymentMRepository";
+import UserRepository from "@/repositories/UsersRepository";
+import { getStore } from "@/common/store";
 
 export default {
   data() {
     return {
+      login: null,
       user: null,
       payMethods: [],
       adresses: [],
@@ -89,9 +91,14 @@ export default {
     };
   },
   async mounted() {
-    this.user = await UsersRepository.findById(this.$route.params.userId);
-    this.payMethods = await PaymentMReporsitory.findAll(this.$route.params.userId);
-    this.adresses = await AdressesRepository.findAll(this.$route.params.userId);
+    if (this.isAdmin) {
+      this.user = await UserRepository.findById(this.$route.params.userId);
+      this.login = this.user.login;
+    } else {
+      this.login = getStore().state.user.login;
+    }
+    this.payMethods = await PaymentMRepository.findAll(this.login);
+    this.adresses = await AdressesRepository.findAll(this.login);
     if (this.adresses.length > 0) {
       this.selectedAdressId = this.adresses[0].id;
     }
