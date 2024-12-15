@@ -24,6 +24,7 @@ function logout() {
   _removeToken();
   getStore().state.user.login = "";
   getStore().state.user.authority = "";
+  getStore().state.user.id = "";
   getStore().state.user.logged = false;
 }
 

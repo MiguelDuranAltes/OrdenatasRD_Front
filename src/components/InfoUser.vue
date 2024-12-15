@@ -11,8 +11,8 @@
       </div>
     </div>
 
-    <div v-if="payMethods && payMethods.length && adresses && adresses.length" class="d-flex">
-      <div class="card pay-Adress-card flex-item">
+    <div class="d-flex">
+      <div v-if="adresses && adresses.length" class="card pay-Adress-card flex-item">
         <div class="card-body">
           <!-- Desplegable -->
           <label for="adress-select" class="form-label">Direcciones</label>
@@ -23,7 +23,7 @@
           </select>
           <span
             v-if="selectedAdressId && !isAdmin"
-            @click="deleteAdress"
+            @click="borrarAdress"
             style="
               cursor: pointer;
               color: red;
@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      <div class="card pay-Adress-card flex-item">
+      <div v-if="payMethods && payMethods.length" class="card pay-Adress-card flex-item">
         <div class="card-body">
           <!-- Desplegable -->
           <label for="adress-select" class="form-label">Métodos de Pago</label>
@@ -51,7 +51,7 @@
           </select>
           <span
             v-if="selectedMethodId && !isAdmin"
-            @click="deletePayMethod"
+            @click="borrarMethod"
             style="
               cursor: pointer;
               color: red;
@@ -119,7 +119,14 @@ export default {
     borrarAdress() {
       AdressesRepository.delete(this.selectedAdressId);
       this.adresses = this.adresses.filter((adress) => adress.id !== this.selectedAdressId);
-      this.selectedAdressId = this.adresses[0].id;
+      this.selectedAdressId = this.adresses.length > 0 ? this.adresses[0].id : null;
+      //this.selectedAdressId = this.adresses[0].id;
+    },
+    borrarMethod() {
+      PaymentMRepository.delete(this.selectedMethodId);
+      this.payMethods = this.payMethods.filter((method) => method.id !== this.selectedMethodId);
+      this.selectedMethodId = this.payMethods.length > 0 ? this.payMethods[0].id : null;
+      //this.selectedMethodId = this.payMethods[0].id;
     }
   }
 };

@@ -9,15 +9,16 @@
               <router-link class="card-link" :to="'/users/' + user.id">
                 {{ user.login }}
               </router-link>
-              <button v-if="!user.blocked" class="btn btn-aceptar" @click="changeBlocked(user)">
-                Bloquear
-              </button>
-              <button v-if="user.blocked" class="btn btn-cancelar" @click="changeBlocked(user)">
-                Desloquear
-              </button>
             </h5>
           </div>
         </div>
+        <button v-if="!user.blocked" class="btn btn-bloquear" @click="changeBlocked(user)">
+          Bloquear
+        </button>
+        <button v-if="user.blocked" class="btn btn-bloquear" @click="changeBlocked(user)">
+          Desloquear
+        </button>
+        <button class="btn btn-eliminar" @click="eliminar(user.id)">Eliminar</button>
       </div>
     </div>
   </div>
@@ -33,19 +34,35 @@ export default {
     };
   },
   async mounted() {
-    this.users = await UsersRepository.findAll();
+    try {
+      this.users = await UsersRepository.findAll();
+    } catch (error) {
+      console.log(error);
+    }
   },
   methods: {
     async changeBlocked(user) {
-      await UsersRepository.changeBlock(user);
-      this.users = await UsersRepository.findAll();
+      try {
+        await UsersRepository.changeBlock(user);
+        this.users = await UsersRepository.findAll();
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async eliminar(id) {
+      try {
+        await UsersRepository.delete(id);
+        this.users = await UsersRepository.findAll();
+      } catch (error) {
+        console.log(error);
+      }
     }
   }
 };
 </script>
 
 <style scoped>
-.btn-aceptar {
+.btn-eliminar {
   background-color: red;
   color: white;
   border: none;
@@ -54,15 +71,21 @@ export default {
   cursor: pointer;
   font-size: 16px;
   margin: 10px 20px;
+  margin-top: 1px;
+  margin-bottom: 30px;
 }
-.btn-cancelar {
-  background-color: grey;
+.btn-bloquear {
+  background-color: hwb(209 20% 5%);
   color: white;
   border: none;
+  /*padding para dimensiones del botón*/
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
+  /*front-size para tamaño de la letra del botón y el botón en general*/
   font-size: 16px;
   margin: 10px 20px;
+  margin-top: 1px;
+  margin-bottom: 30px;
 }
 </style>
