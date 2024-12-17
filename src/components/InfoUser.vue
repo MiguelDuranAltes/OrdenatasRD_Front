@@ -2,6 +2,10 @@
   <div class="user-info-container">
     <!--IMAGEN-->
 
+    <div class="user-image">
+      <img :src="userImage" alt="User Image" class="profile-image" />
+    </div>
+
     <div class="user-info">
       <div class="user-detail">
         <div class="info-item flex-column align-items-start">
@@ -77,6 +81,7 @@ import AdressesRepository from "@/repositories/AdressesRepository";
 import PaymentMRepository from "@/repositories/PaymentMRepository";
 import UserRepository from "@/repositories/UsersRepository";
 import { getStore } from "@/common/store";
+import defaultImage from "@/assets/logo.png";
 
 export default {
   data() {
@@ -86,7 +91,7 @@ export default {
       payMethods: [],
       adresses: [],
       selectedAdressId: null,
-      selectedMethodId: null,
+      userImage: defaultImage,
       isAdmin: auth.isAdmin()
     };
   },
@@ -132,6 +137,20 @@ export default {
 };
 </script>
 <style scoped>
+.user-image {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.profile-image {
+  width: 150px; /* Tamaño de la imagen */
+  height: 150px;
+  border-radius: 50%; /* Imagen redonda */
+  object-fit: cover; /* Ajustar la imagen */
+  border: 2px solid #ccc;
+}
+
 .d-flex {
   display: flex;
   justify-content: center; /* Centrar los componentes horizontalmente */
