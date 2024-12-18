@@ -25,17 +25,7 @@
               {{ adress.street }}, {{ adress.door }} {{ adress.portal }}
             </option>
           </select>
-          <span
-            v-if="selectedAdressId && !isAdmin"
-            @click="borrarAdress"
-            style="
-              cursor: pointer;
-              color: red;
-              text-decoration: underline;
-              margin-top: 10px;
-              display: inline-block;
-            "
-          >
+          <span v-if="selectedAdressId && !isAdmin" @click="borrarAdress" class="delete-button">
             Delete
           </span>
         </div>
@@ -44,23 +34,13 @@
       <div v-if="payMethods && payMethods.length" class="card pay-Adress-card flex-item">
         <div class="card-body">
           <!-- Desplegable -->
-          <label for="adress-select" class="form-label">Métodos de Pago</label>
-          <select id="adress-select" v-model="selectedMethodId" class="form-select">
+          <label for="payment-select" class="form-label">Métodos de Pago</label>
+          <select id="payment-select" v-model="selectedMethodId" class="form-select">
             <option v-for="method in payMethods" :key="method.id" :value="method.id">
               {{ method.hiddenCardNumber }}
             </option>
           </select>
-          <span
-            v-if="selectedMethodId && !isAdmin"
-            @click="borrarMethod"
-            style="
-              cursor: pointer;
-              color: red;
-              text-decoration: underline;
-              margin-top: 10px;
-              display: inline-block;
-            "
-          >
+          <span v-if="selectedMethodId && !isAdmin" @click="borrarMethod" class="delete-button">
             Delete
           </span>
         </div>
@@ -75,7 +55,7 @@
         </div>
         <div class="card-body">
           <div class="form-group">
-            <label for="street">Calle</label>
+            <label for="street">Calle *</label>
             <input
               type="text"
               class="form-control"
@@ -110,7 +90,7 @@
           </div>
 
           <div class="form-group">
-            <label for="postalCode">Código Postal</label>
+            <label for="postalCode">Código Postal *</label>
             <input
               type="number"
               class="form-control"
@@ -122,7 +102,7 @@
           </div>
 
           <div class="form-group">
-            <label for="city">Ciudad</label>
+            <label for="city">Ciudad *</label>
             <input type="text" class="form-control" id="city" v-model="newAdress.city" required />
           </div>
         </div>
@@ -160,7 +140,7 @@
           <div class="form-group">
             <label for="expirationDate">Fecha de Expiración</label>
             <input
-              type="date"
+              type="month"
               class="form-control"
               id="expirationDate"
               v-model="newPayment.expirationDate"
@@ -276,6 +256,7 @@ export default {
       //this.selectedMethodId = this.payMethods[0].id;
     },
     tryNewAddress() {
+      this.errorMessage = null;
       this.createAdress = true;
     },
     notNewAdress() {
@@ -283,15 +264,24 @@ export default {
     },
     async saveAdress() {
       try {
-        console.log(this.newAdress);
+        this.errorMessage = null;
+        if (!this.newAdress.street || !this.newAdress.postalCode || !this.newAdress.city) {
+          this.errorMessage = "Todos los campos requeridos deben completarse.";
+          return;
+        }
+
         await AdressesRepository.create(this.newAdress);
         this.createAdress = false;
         this.adresses = await AdressesRepository.findAll(this.login);
       } catch (err) {
-        console.log(err);
+        this.handleError(
+          err,
+          "Ocurrió un error durante la creación de la dirección, inténtelo de nuevo."
+        );
       }
     },
     tryNewPayment() {
+      this.errorMessage = null;
       this.createPayment = true;
     },
     notNewPayment() {
@@ -299,12 +289,32 @@ export default {
     },
     async savePayment() {
       try {
-        console.log(this.newPayment);
+        this.errorMessage = null;
+        if (
+          !this.newPayment.creditCardNumber ||
+          !this.newPayment.expirationDate ||
+          !this.newPayment.cvv ||
+          !this.newPayment.name
+        ) {
+          this.errorMessage = "Todos los deben completarse.";
+          return;
+        }
         await PaymentMRepository.create(this.newPayment);
         this.createPayment = false;
         this.payMethods = await PaymentMRepository.findAll(this.login);
       } catch (err) {
-        console.log(err);
+        this.handleError(
+          err,
+          "Ocurrió un error durante la creación del método, inténtelo de nuevo."
+        );
+      }
+    },
+    handleError(err, defaultMessage) {
+      console.log(err);
+      if (err.response?.data?.message) {
+        this.errorMessage = err.response.data.message;
+      } else {
+        this.errorMessage = defaultMessage;
       }
     }
   }
@@ -423,5 +433,17 @@ export default {
   color: red;
   text-align: center;
   margin-top: 10px;
+  max-width: 300px; /* Ajusta este valor según tu diseño */
+  white-space: normal;
+  word-wrap: break-word; /* Para navegadores antiguos */
+  overflow-wrap: break-word; /* Para navegadores modernos */
+}
+
+.delete-button {
+  cursor: pointer;
+  color: red;
+  text-decoration: underline;
+  margin-top: 10px;
+  display: inline-block;
 }
 </style>
