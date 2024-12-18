@@ -10,5 +10,8 @@ export default {
   async delete(id) {
     const response = await HTTP.delete(`${resource}/${id}`);
     return response.data;
+  },
+  async create(address) {
+    return (await HTTP.post(`${resource}`, address)).data;
   }
 };
