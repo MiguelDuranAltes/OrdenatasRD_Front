@@ -1,16 +1,14 @@
 <template>
   <div class="user-info-container">
-    <!--IMAGEN-->
-
     <div class="user-image">
-      <img :src="userImage" alt="User Image" class="profile-image" />
+      <img :src="getImageSrc" alt="User Image" class="profile-image" />
     </div>
 
-    <div class="user-info">
+    <div v-if="this.user" class="user-info">
       <div class="user-detail">
         <div class="info-item flex-column align-items-start">
           <div class="label">Login:</div>
-          <div class="value">{{ this.login }}</div>
+          <div class="value">{{ this.user.login }}</div>
         </div>
       </div>
     </div>
@@ -186,8 +184,10 @@ import auth from "@/common/auth.js";
 import AdressesRepository from "@/repositories/AdressesRepository";
 import PaymentMRepository from "@/repositories/PaymentMRepository";
 import UserRepository from "@/repositories/UsersRepository";
-import { getStore } from "@/common/store";
+//import { getStore } from "@/common/store";
 import defaultImage from "@/assets/logo.png";
+//import defaultImage from "@/assets/descarga.jpeg";
+import { BACKEND_URL } from "@/constants";
 
 export default {
   data() {
@@ -218,14 +218,9 @@ export default {
     };
   },
   async mounted() {
-    if (this.isAdmin) {
-      this.user = await UserRepository.findById(this.$route.params.userId);
-      this.login = this.user.login;
-    } else {
-      this.login = getStore().state.user.login;
-    }
-    this.payMethods = await PaymentMRepository.findAll(this.login);
-    this.adresses = await AdressesRepository.findAll(this.login);
+    this.user = await UserRepository.findById(this.$route.params.userId);
+    this.payMethods = await PaymentMRepository.findAll(this.user.login);
+    this.adresses = await AdressesRepository.findAll(this.user.login);
     if (this.adresses.length > 0) {
       this.selectedAdressId = this.adresses[0].id;
     }
@@ -240,6 +235,12 @@ export default {
     },
     selectedMethod() {
       return this.payMethods.find((method) => method.id === this.selectedMethodId) || {};
+    },
+    getImageSrc() {
+      if (this.user?.hasImage) {
+        return `${BACKEND_URL}/users/${this.user.id}/imagen`;
+      }
+      return defaultImage;
     }
   },
   methods: {
