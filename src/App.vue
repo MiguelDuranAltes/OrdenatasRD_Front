@@ -65,7 +65,9 @@
             </router-link>
           </li>
         </ul>
-
+        <router-link class="nav-link" to="/cart" v-if="store.state.user.logged">
+          <img src="/public/cart.png" alt="cart" width="30" height="30" />
+        </router-link>
         <span v-if="store.state.user.logged"> autenticado como {{ store.state.user.login }} </span>
         <ul class="navbar-nav">
           <!-- <li class="nav-item" v-if="!store.state.user.logged">

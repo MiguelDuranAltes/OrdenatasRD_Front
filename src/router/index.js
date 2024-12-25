@@ -7,11 +7,12 @@ import ProductDetail from "../components/ProductDetail.vue";
 import RegisterForm from "../components/RegisterForm.vue";
 import ProductForm from "../components/ProductForm.vue";
 import ProductListByBrand from "../components/ProductListByBrand.vue";
-
 import ShowUsers from "@/components/ShowUsers.vue";
 import auth from "@/common/auth";
 import { getStore } from "@/common/store";
 import InfoUser from "@/components/InfoUser.vue";
+import CartView from "@/components/CartView.vue";
+import NewOrder from "@/components/NewOrder.vue";
 
 const routes = [
   {
@@ -59,9 +60,19 @@ const routes = [
     component: InfoUser
   },
   {
+    path: "/cart",
+    name: "CartView",
+    component: CartView
+  },
+  {
     path: "/products/brands/:brand",
     name: "ProductListByBrand",
     component: ProductListByBrand
+  },
+  {
+    path: "/orders/new",
+    name: "NewOrder",
+    component: NewOrder
   },
   // /notes/new debe colocarse antes de /notes/:id porque si no vue-router
   // interpreta "new" como si fuera el id.

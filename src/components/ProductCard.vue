@@ -24,7 +24,13 @@
         >
           Detalles
         </router-link>
-        <button v-if="!this.isAdmin" class="btn btn-success btn-sm">Añadir al carrito</button>
+        <button
+          v-if="!isAdmin && product.availability"
+          class="btn btn-success btn-sm"
+          @click="addProductToCart"
+        >
+          Añadir al carrito
+        </button>
         <router-link
           v-if="this.isAdmin"
           class="btn btn-warning btn-sm"
@@ -39,6 +45,7 @@
 
 <script>
 import auth from "@/common/auth";
+import { addToCart } from "@/common/store";
 
 export default {
   data() {
@@ -54,6 +61,13 @@ export default {
     showDetailsButton: {
       type: Boolean,
       default: true
+    }
+  },
+  methods: {
+    addProductToCart() {
+      addToCart(this.product.id); // Llama a la función para añadir el producto al carrito
+      alert(`${this.product.name} añadido al carrito.`); //Se podría no hacer el alert y usar un Toast para ello habría que hacer
+      //un componente Toast y llamarlo aquí
     }
   }
 };

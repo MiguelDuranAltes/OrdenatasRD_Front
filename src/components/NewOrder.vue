@@ -1,18 +1,17 @@
 <template>
-  <div class="user-info-container">
-    <div class="user-image">
-      <img :src="getImageSrc" alt="User Image" class="profile-image" />
-    </div>
-
-    <div v-if="this.user" class="user-info">
-      <div class="user-detail">
-        <div class="info-item flex-column align-items-start">
-          <div class="label">Login:</div>
-          <div class="value">{{ this.user.login }}</div>
+  <div class="container">
+    <h1>Resumen de pedido</h1>
+    <div class="row">
+      <div class="product-list">
+        <div class="product-card" v-for="product in products" :key="product.id">
+          <h4>{{ product.name }}</h4>
+          <p>Precio: {{ product.price }}€</p>
+          <p>Cantidad: {{ getQuantity(product.id).quantity }}</p>
         </div>
       </div>
     </div>
-
+  </div>
+  <div class="user-info-container">
     <div class="d-flex">
       <div v-if="adresses && adresses.length" class="card pay-Adress-card flex-item">
         <div class="card-body">
@@ -23,9 +22,6 @@
               {{ adress.street }}, {{ adress.door }} {{ adress.portal }}
             </option>
           </select>
-          <span v-if="selectedAdressId && !isAdmin" @click="borrarAdress" class="delete-button">
-            Delete
-          </span>
         </div>
       </div>
 
@@ -38,9 +34,6 @@
               {{ method.hiddenCardNumber }}
             </option>
           </select>
-          <span v-if="selectedMethodId && !isAdmin" @click="borrarMethod" class="delete-button">
-            Delete
-          </span>
         </div>
       </div>
     </div>
@@ -177,27 +170,33 @@
       Add New Payment
     </button>
   </div>
+
+  <div>
+    <div>
+      <h3>Total: {{ this.total }} €</h3>
+    </div>
+    <button class="btn btn-primary btn-sm" @click="makeOrder()">Realizar pedido</button>
+    <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
+  </div>
 </template>
 
 <script>
-import auth from "@/common/auth.js";
+import { getStore, clearCart } from "@/common/store";
+import ProductRepository from "@/repositories/ProductRepository";
 import AdressesRepository from "@/repositories/AdressesRepository";
 import PaymentMRepository from "@/repositories/PaymentMRepository";
-import UserRepository from "@/repositories/UsersRepository";
-import defaultImage from "@/assets/logo.png";
-import { BACKEND_URL } from "@/constants";
+import OrderRepository from "@/repositories/OrderRepository";
 
 export default {
   data() {
     return {
+      cart: null,
+      products: [],
       login: null,
-      user: null,
       payMethods: [],
       adresses: [],
       selectedAdressId: null,
       selectedMethodId: null,
-      userImage: defaultImage,
-      isAdmin: auth.isAdmin(),
       createAdress: false,
       createPayment: false,
       newAdress: {
@@ -213,47 +212,46 @@ export default {
         cvv: "",
         name: ""
       },
+      order: null,
       errorMessage: null
     };
   },
   async mounted() {
-    this.user = await UserRepository.findById(this.$route.params.userId);
-    this.payMethods = await PaymentMRepository.findAll(this.user.login);
-    this.adresses = await AdressesRepository.findAll(this.user.login);
-    if (this.adresses.length > 0) {
-      this.selectedAdressId = this.adresses[0].id;
-    }
-    if (this.payMethods.length > 0) {
-      this.selectedMethodId = this.payMethods[0].id;
-    }
+    this.cart = getStore().state.cart;
+    this.login = getStore().state.user.login;
+    const allProducts = await ProductRepository.findAll();
+    this.products = allProducts.filter((product) =>
+      this.cart.some((cartItem) => cartItem.productId === product.id)
+    );
+    this.payMethods = await PaymentMRepository.findAll(this.login);
+    this.adresses = await AdressesRepository.findAll(this.login);
   },
   computed: {
+    total() {
+      return this.getTotal();
+    },
     // Obtener la dirección seleccionada basada en el ID
     selectedAdress() {
       return this.adresses.find((adress) => adress.id === this.selectedAdressId) || {};
     },
     selectedMethod() {
       return this.payMethods.find((method) => method.id === this.selectedMethodId) || {};
-    },
-    getImageSrc() {
-      if (this.user?.hasImage) {
-        return `${BACKEND_URL}/users/${this.user.id}/imagen`;
-      }
-      return defaultImage;
     }
   },
   methods: {
-    borrarAdress() {
-      AdressesRepository.delete(this.selectedAdressId);
-      this.adresses = this.adresses.filter((adress) => adress.id !== this.selectedAdressId);
-      this.selectedAdressId = this.adresses.length > 0 ? this.adresses[0].id : null;
-      //this.selectedAdressId = this.adresses[0].id;
+    getQuantity(productId) {
+      return this.cart.find((cartItem) => cartItem.productId === productId);
     },
-    borrarMethod() {
-      PaymentMRepository.delete(this.selectedMethodId);
-      this.payMethods = this.payMethods.filter((method) => method.id !== this.selectedMethodId);
-      this.selectedMethodId = this.payMethods.length > 0 ? this.payMethods[0].id : null;
-      //this.selectedMethodId = this.payMethods[0].id;
+    getTotal() {
+      return this.products
+        .reduce((total, product) => {
+          const cartItem = this.cart.find((item) => item.productId === product.id);
+          if (cartItem) {
+            total += product.price * cartItem.quantity;
+          }
+          return total;
+        }, 0)
+        .toFixed(2);
     },
     tryNewAddress() {
       this.errorMessage = null;
@@ -269,7 +267,6 @@ export default {
           this.errorMessage = "Todos los campos requeridos deben completarse.";
           return;
         }
-
         await AdressesRepository.create(this.newAdress);
         this.createAdress = false;
         this.adresses = await AdressesRepository.findAll(this.login);
@@ -296,7 +293,7 @@ export default {
           !this.newPayment.cvv ||
           !this.newPayment.name
         ) {
-          this.errorMessage = "Todos los deben completarse.";
+          this.errorMessage = "Todos los campos deben completarse.";
           return;
         }
         await PaymentMRepository.create(this.newPayment);
@@ -316,31 +313,62 @@ export default {
       } else {
         this.errorMessage = defaultMessage;
       }
+      console.log(this.errorMessage);
+    },
+    async makeOrder() {
+      if (this.selectedAdressId === null || this.selectedMethodId === null) {
+        this.errorMessage = "Debe seleccionar una dirección y un método de pago.";
+        return;
+      }
+      try {
+        this.order = {
+          userLogin: this.login,
+          price: this.total,
+          adress: this.selectedAdress,
+          paymentMethod: this.selectedMethod
+        };
+        const orderRequest = {
+          order: this.order,
+          orderProducts: this.cart
+        };
+
+        await OrderRepository.create(orderRequest);
+        this.$router.push("/products");
+        clearCart();
+      } catch (err) {
+        this.handleError(
+          err,
+          "Ocurrió un error durante la creación del pedido, inténtelo de nuevo."
+        );
+      }
     }
   }
 };
 </script>
+
 <style scoped>
-.user-image {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 20px;
-}
-
-.profile-image {
-  width: 150px; /* Tamaño de la imagen */
-  height: 150px;
-  border-radius: 50%; /* Imagen redonda */
-  object-fit: cover; /* Ajustar la imagen */
-  border: 2px solid #ccc;
-}
-
 .d-flex {
   display: flex;
   justify-content: center; /* Centrar los componentes horizontalmente */
   align-items: flex-start; /* Alinear los componentes con la parte superior */
   gap: 20px; /* Espacio entre las tarjetas */
   margin-top: 40px; /* Separación del componente superior */
+}
+
+.product-list {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 10px;
+  background: #f9f9f9;
 }
 
 .flex-item {
@@ -408,6 +436,10 @@ export default {
   margin: 10px 10px;
 }
 
+button.btn-sm {
+  width: auto; /* El botón no ocupará todo el ancho */
+  padding: 10px 20px; /* Agregar algo de espacio para que el botón no se vea pequeño */
+}
 /* Modal */
 .modal-overlay {
   position: fixed;
@@ -433,17 +465,6 @@ export default {
   color: red;
   text-align: center;
   margin-top: 10px;
-  max-width: 300px; /* Ajusta este valor según tu diseño */
   white-space: normal;
-  word-wrap: break-word; /* Para navegadores antiguos */
-  overflow-wrap: break-word; /* Para navegadores modernos */
-}
-
-.delete-button {
-  cursor: pointer;
-  color: red;
-  text-decoration: underline;
-  margin-top: 10px;
-  display: inline-block;
 }
 </style>
