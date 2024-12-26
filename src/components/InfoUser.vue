@@ -1,9 +1,16 @@
 <template>
   <div class="user-info-container">
+    <!--Imagen-->
     <div class="user-image">
-      <img :src="getImageSrc" alt="User Image" class="profile-image" />
+      <img :src="userImage" alt="User Image" class="profile-image" />
     </div>
-
+    <div class="mb-3">
+      <button class="btn btn-primary" @click.prevent="iniciarSubidaFichero()">
+        Cambiar Imagen
+      </button>
+      <input ref="inputOculto" class="d-none" type="file" @change="actualizarImagen()" />
+    </div>
+    <!--Login-->
     <div v-if="this.user" class="user-info">
       <div class="user-detail">
         <div class="info-item flex-column align-items-start">
@@ -12,7 +19,7 @@
         </div>
       </div>
     </div>
-
+    <!--Direcciones y Métodos de Pago-->
     <div class="d-flex">
       <div v-if="adresses && adresses.length" class="card pay-Adress-card flex-item">
         <div class="card-body">
@@ -168,7 +175,7 @@
       <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
     </div>
   </div>
-
+  <!--Nuevas Direcciones y Métodos de Pago-->
   <div class="fixed-buttons">
     <button v-if="!isAdmin" class="btn btn-primary btn-sm" @click="tryNewAddress">
       Add New Address
@@ -185,6 +192,7 @@ import AdressesRepository from "@/repositories/AdressesRepository";
 import PaymentMRepository from "@/repositories/PaymentMRepository";
 import UserRepository from "@/repositories/UsersRepository";
 import defaultImage from "@/assets/logo.png";
+import ImageRepository from "@/repositories/ImageRepository";
 import { BACKEND_URL } from "@/constants";
 
 export default {
@@ -226,6 +234,9 @@ export default {
     if (this.payMethods.length > 0) {
       this.selectedMethodId = this.payMethods[0].id;
     }
+    this.userImage = this.user.hasImage
+      ? `${BACKEND_URL}/users/${this.user.id}/imagen`
+      : defaultImage;
   },
   computed: {
     // Obtener la dirección seleccionada basada en el ID
@@ -234,12 +245,6 @@ export default {
     },
     selectedMethod() {
       return this.payMethods.find((method) => method.id === this.selectedMethodId) || {};
-    },
-    getImageSrc() {
-      if (this.user?.hasImage) {
-        return `${BACKEND_URL}/users/${this.user.id}/imagen`;
-      }
-      return defaultImage;
     }
   },
   methods: {
@@ -309,12 +314,24 @@ export default {
         );
       }
     },
-    handleError(err, defaultMessage) {
-      console.log(err);
-      if (err.response?.data?.message) {
-        this.errorMessage = err.response.data.message;
-      } else {
-        this.errorMessage = defaultMessage;
+    async iniciarSubidaFichero() {
+      this.$refs.inputOculto.click();
+    },
+    async actualizarImagen() {
+      try {
+        const file = this.$refs.inputOculto.files[0];
+        if (!file) {
+          throw new Error("No se ha seleccionado ningún archivo.");
+        }
+        await ImageRepository.saveImage(this.user.id, file);
+        this.userImage = `${BACKEND_URL}/users/${this.user.id}/imagen?timestamp=${new Date().getTime()}`;
+        console.log("Imagen subida y actualizada exitosamente.");
+      } catch (err) {
+        console.error("Error al subir la imagen:", err);
+        this.errorMessage = err.response?.data?.message || "Error al subir la imagen.";
+      } finally {
+        // Limpiar el input
+        this.$refs.inputOculto.value = null;
       }
     }
   }
