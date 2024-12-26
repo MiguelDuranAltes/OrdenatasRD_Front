@@ -313,7 +313,6 @@ export default {
       } else {
         this.errorMessage = defaultMessage;
       }
-      console.log(this.errorMessage);
     },
     async makeOrder() {
       if (this.selectedAdressId === null || this.selectedMethodId === null) {

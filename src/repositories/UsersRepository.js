@@ -2,6 +2,11 @@ import HTTP from "@/common/http";
 
 const resource = "users";
 
+function applyDate(order) {
+  order.purchaseDate = new Date(order.purchaseDate);
+  return order;
+}
+
 export default {
   async findAll() {
     const response = await HTTP.get(`${resource}`);
@@ -10,6 +15,11 @@ export default {
   async findById(id) {
     const response = await HTTP.get(`${resource}/${id}`);
     return response.data;
+  },
+  async findOne(id) {
+    const response = await HTTP.get(`${resource}/${id}/orders`);
+    response.data.orders.forEach(applyDate);
+    return response.data.orders;
   },
   async changeBlock(user) {
     if (user.blocked) {

@@ -64,9 +64,14 @@
               User Info
             </router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="btn btn-success btn-sm" style="margin: 5px 20px" :to="'/orders/'">
+              Order List
+            </router-link>
+          </li>
         </ul>
         <router-link class="nav-link" to="/cart" v-if="store.state.user.logged">
-          <img src="/public/cart.png" alt="cart" width="30" height="30" />
+          <img src="/src/assets/cart.png" alt="cart" width="30" height="30" />
         </router-link>
         <span v-if="store.state.user.logged"> autenticado como {{ store.state.user.login }} </span>
         <ul class="navbar-nav">

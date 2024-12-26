@@ -13,6 +13,8 @@ import { getStore } from "@/common/store";
 import InfoUser from "@/components/InfoUser.vue";
 import CartView from "@/components/CartView.vue";
 import NewOrder from "@/components/NewOrder.vue";
+import OrderList from "@/components/OrderList.vue";
+import UserOrderList from "@/components/UserOrderList.vue";
 
 const routes = [
   {
@@ -74,13 +76,16 @@ const routes = [
     name: "NewOrder",
     component: NewOrder
   },
-  // /notes/new debe colocarse antes de /notes/:id porque si no vue-router
-  // interpreta "new" como si fuera el id.
-  //
-  // Una forma de evitar este problema es usar una expresión regular para
-  // limitar los valores que son interpretados. Por ejemplo, usando el path
-  // /notes/:id(\\d+), vue-router espera que :id sea numérico.
-
+  {
+    path: "/orders",
+    name: "OrderList",
+    component: OrderList
+  },
+  {
+    path: "/orders/users/:userId",
+    name: "UserOrderList",
+    component: UserOrderList
+  },
   {
     path: "/:catchAll(.*)*",
     component: ErrorNotFoundView,
