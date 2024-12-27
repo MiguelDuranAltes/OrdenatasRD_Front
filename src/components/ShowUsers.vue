@@ -16,9 +16,9 @@
           Bloquear
         </button>
         <button v-if="user.blocked" class="btn btn-bloquear" @click="changeBlocked(user)">
-          Desloquear
+          Desbloquear
         </button>
-        <button class="btn btn-eliminar" @click="eliminar(user.id)">Eliminar</button>
+        <button class="btn btn-eliminar" @click="eliminar(user.id)">Elimina</button>
       </div>
     </div>
   </div>

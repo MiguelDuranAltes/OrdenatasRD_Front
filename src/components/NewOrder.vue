@@ -163,10 +163,10 @@
   </div>
 
   <div class="fixed-buttons">
-    <button v-if="!isAdmin" class="btn btn-primary btn-sm" @click="tryNewAddress">
+    <button v-if="!isAdmin" class="btn btn-secondary btn-sm" @click="tryNewAddress">
       Add New Address
     </button>
-    <button v-if="!isAdmin" class="btn btn-primary btn-sm" @click="tryNewPayment">
+    <button v-if="!isAdmin" class="btn btn-secondary btn-sm" @click="tryNewPayment">
       Add New Payment
     </button>
   </div>
@@ -175,7 +175,10 @@
     <div>
       <h3>Total: {{ this.total }} €</h3>
     </div>
-    <button class="btn btn-primary btn-sm" @click="makeOrder()">Realizar pedido</button>
+    <div class="d-flex justify-content-center gap-3">
+      <router-link class="btn btn-danger" to="/products"> Cancelar </router-link>
+      <button class="btn btn-primary" @click="makeOrder()">Realizar pedido</button>
+    </div>
     <p v-if="errorMessage" class="error-message">{{ errorMessage }}</p>
   </div>
 </template>
@@ -192,7 +195,7 @@ export default {
     return {
       cart: null,
       products: [],
-      login: null,
+      user: null,
       payMethods: [],
       adresses: [],
       selectedAdressId: null,
@@ -218,13 +221,19 @@ export default {
   },
   async mounted() {
     this.cart = getStore().state.cart;
-    this.login = getStore().state.user.login;
+    this.user = getStore().state.user;
     const allProducts = await ProductRepository.findAll();
     this.products = allProducts.filter((product) =>
       this.cart.some((cartItem) => cartItem.productId === product.id)
     );
-    this.payMethods = await PaymentMRepository.findAll(this.login);
-    this.adresses = await AdressesRepository.findAll(this.login);
+    this.adresses = await AdressesRepository.findAll(this.user.id);
+    if (this.adresses.length > 0) {
+      this.selectedAdressId = this.adresses[0].id;
+    }
+    this.payMethods = await PaymentMRepository.findAll(this.user.id);
+    if (this.payMethods.length > 0) {
+      this.selectedMethodId = this.payMethods[0].id;
+    }
   },
   computed: {
     total() {
@@ -269,7 +278,7 @@ export default {
         }
         await AdressesRepository.create(this.newAdress);
         this.createAdress = false;
-        this.adresses = await AdressesRepository.findAll(this.login);
+        this.adresses = await AdressesRepository.findAll(this.user.id);
       } catch (err) {
         this.handleError(
           err,
@@ -298,7 +307,7 @@ export default {
         }
         await PaymentMRepository.create(this.newPayment);
         this.createPayment = false;
-        this.payMethods = await PaymentMRepository.findAll(this.login);
+        this.payMethods = await PaymentMRepository.findAll(this.user.id);
       } catch (err) {
         this.handleError(
           err,
@@ -321,7 +330,7 @@ export default {
       }
       try {
         this.order = {
-          userLogin: this.login,
+          userLogin: this.user.login,
           price: this.total,
           adress: this.selectedAdress,
           paymentMethod: this.selectedMethod

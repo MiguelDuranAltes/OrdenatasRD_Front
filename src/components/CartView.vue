@@ -30,7 +30,10 @@
         <div class="col-12 text-end">
           <h3>Total: {{ this.total }} €</h3>
         </div>
-        <button class="btn btn-primary" @click="makeOrder()">Realizar pedido</button>
+        <div class="d-flex justify-content-center gap-3">
+          <router-link class="btn btn-danger" to="/products"> Cancelar </router-link>
+          <button class="btn btn-primary" @click="makeOrder()">Realizar pedido</button>
+        </div>
       </div>
     </div>
   </div>

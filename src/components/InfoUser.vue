@@ -194,11 +194,11 @@ import UserRepository from "@/repositories/UsersRepository";
 import defaultImage from "@/assets/logo.png";
 import ImageRepository from "@/repositories/ImageRepository";
 import { BACKEND_URL } from "@/constants";
+import { getStore } from "@/common/store";
 
 export default {
   data() {
     return {
-      login: null,
       user: null,
       payMethods: [],
       adresses: [],
@@ -226,8 +226,12 @@ export default {
   },
   async mounted() {
     this.user = await UserRepository.findById(this.$route.params.userId);
-    this.payMethods = await PaymentMRepository.findAll(this.user.login);
-    this.adresses = await AdressesRepository.findAll(this.user.login);
+    if (!this.isAdmin && getStore().state.user.id != parseInt(this.$route.params.userId)) {
+      this.$router.push("/unauthorized");
+      return;
+    }
+    this.payMethods = await PaymentMRepository.findAll(this.user.id);
+    this.adresses = await AdressesRepository.findAll(this.user.id);
     if (this.adresses.length > 0) {
       this.selectedAdressId = this.adresses[0].id;
     }
@@ -277,7 +281,7 @@ export default {
 
         await AdressesRepository.create(this.newAdress);
         this.createAdress = false;
-        this.adresses = await AdressesRepository.findAll(this.login);
+        this.adresses = await AdressesRepository.findAll(this.user.id);
       } catch (err) {
         this.handleError(
           err,
@@ -306,7 +310,7 @@ export default {
         }
         await PaymentMRepository.create(this.newPayment);
         this.createPayment = false;
-        this.payMethods = await PaymentMRepository.findAll(this.login);
+        this.payMethods = await PaymentMRepository.findAll(this.user.id);
       } catch (err) {
         this.handleError(
           err,

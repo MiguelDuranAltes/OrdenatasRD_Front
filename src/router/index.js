@@ -15,6 +15,7 @@ import CartView from "@/components/CartView.vue";
 import NewOrder from "@/components/NewOrder.vue";
 import OrderList from "@/components/OrderList.vue";
 import UserOrderList from "@/components/UserOrderList.vue";
+import UnauthorizedView from "@/views/UnauthorizedView.vue";
 
 const routes = [
   {
@@ -64,7 +65,8 @@ const routes = [
   {
     path: "/cart",
     name: "CartView",
-    component: CartView
+    component: CartView,
+    meta: { authority: "USER" }
   },
   {
     path: "/products/brands/:brand",
@@ -74,7 +76,8 @@ const routes = [
   {
     path: "/orders/new",
     name: "NewOrder",
-    component: NewOrder
+    component: NewOrder,
+    meta: { authority: "USER" }
   },
   {
     path: "/orders",
@@ -84,7 +87,13 @@ const routes = [
   {
     path: "/orders/users/:userId",
     name: "UserOrderList",
-    component: UserOrderList
+    component: UserOrderList,
+    meta: { authority: "ADMIN" }
+  },
+  {
+    path: "/unauthorized",
+    name: "Unauthorized",
+    component: UnauthorizedView
   },
   {
     path: "/:catchAll(.*)*",

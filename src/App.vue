@@ -16,33 +16,9 @@
       <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0" v-if="store.state.user.logged">
           <li class="nav-item">
-            <router-link class="nav-link" to="/about" active-class="active">
-              Acerca de
+            <router-link class="btn btn-success btn-sm" :to="'/products'" style="margin: 5px 20px">
+              Lista Productos
             </router-link>
-          </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-expanded="false"
-              ref="dropdownElement"
-            >
-              Productos
-            </a>
-            <ul class="dropdown-menu">
-              <li>
-                <router-link class="dropdown-item" to="/products" active-class="active"
-                  >Lista de productos</router-link
-                >
-              </li>
-              <li>
-                <router-link class="dropdown-item" to="/asdf" active-class="active">
-                  URL incorrecta
-                </router-link>
-              </li>
-            </ul>
           </li>
           <li class="nav-item">
             <router-link
@@ -54,23 +30,18 @@
               Lista Usuarios
             </router-link>
           </li>
-
-          <li class="nav-item">
-            <router-link
-              class="btn btn-success btn-sm"
-              style="margin: 5px 20px"
-              :to="'/users/' + store.state.user.id"
-            >
-              User Info
-            </router-link>
-          </li>
           <li class="nav-item">
             <router-link class="btn btn-success btn-sm" style="margin: 5px 20px" :to="'/orders/'">
               Order List
             </router-link>
           </li>
         </ul>
-        <router-link class="nav-link" to="/cart" v-if="store.state.user.logged">
+        <router-link
+          class="nav-link"
+          to="/cart"
+          v-if="store.state.user.logged && !auth.isAdmin()"
+          style="margin: 5px 20px"
+        >
           <img src="/src/assets/cart.png" alt="cart" width="30" height="30" />
         </router-link>
         <span v-if="store.state.user.logged"> autenticado como {{ store.state.user.login }} </span>
@@ -84,6 +55,15 @@
             <a class="nav-link" @click="desautenticarme()"> Logout </a>
           </li>
         </ul>
+        <li class="nav-item">
+          <router-link
+            style="margin: 5px 20px"
+            :to="'/users/' + store.state.user.id"
+            v-if="store.state.user.logged"
+          >
+            <img src="/src/assets/perf.png" alt="perfil" width="30" height="30" />
+          </router-link>
+        </li>
       </div>
     </div>
   </nav>
@@ -105,17 +85,6 @@ export default {
     desautenticarme() {
       auth.logout();
       this.$router.push("/");
-    }
-  },
-  watch: {
-    $route(newValue) {
-      if (this.store.state.user.logged) {
-        if (["ProductList", "ProductListSetup"].includes(newValue.name)) {
-          this.$refs.dropdownElement.classList.add("active");
-        } else {
-          this.$refs.dropdownElement.classList.remove("active");
-        }
-      }
     }
   }
 };
