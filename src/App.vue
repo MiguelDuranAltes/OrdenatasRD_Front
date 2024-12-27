@@ -71,7 +71,7 @@
 </template>
 
 <script>
-import { getStore } from "./common/store";
+import { getStore, clearCart } from "./common/store";
 import auth from "./common/auth";
 
 export default {
@@ -84,6 +84,7 @@ export default {
   methods: {
     desautenticarme() {
       auth.logout();
+      clearCart();
       this.$router.push("/");
     }
   }
