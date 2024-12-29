@@ -4,11 +4,16 @@
     <div class="user-image">
       <img :src="userImage" alt="User Image" class="profile-image" />
     </div>
-    <div class="mb-3">
-      <button class="btn btn-primary" @click.prevent="iniciarSubidaFichero()">
+    <div class="fixed-buttons">
+      <button
+        class="btn btn-primary"
+        @click.prevent="iniciarSubidaFichero()"
+        style="margin-right: 10px"
+      >
         Cambiar Imagen
       </button>
       <input ref="inputOculto" class="d-none" type="file" @change="actualizarImagen()" />
+      <button class="btn btn-primary" @click="borrarImagen()">Borrar Imagen</button>
     </div>
     <!--Login-->
     <div v-if="this.user" class="user-info">
@@ -226,6 +231,7 @@ export default {
   },
   async mounted() {
     this.user = await UserRepository.findById(this.$route.params.userId);
+    console.log(this.user);
     if (!this.isAdmin && getStore().state.user.id != parseInt(this.$route.params.userId)) {
       this.$router.push("/unauthorized");
       return;
@@ -336,6 +342,14 @@ export default {
       } finally {
         // Limpiar el input
         this.$refs.inputOculto.value = null;
+      }
+    },
+    async borrarImagen() {
+      try {
+        await ImageRepository.deleteImage(this.user.id);
+        this.userImage = defaultImage;
+      } catch (err) {
+        this.errorMessage = err.response?.data?.message || "Error al borrar la imagen.";
       }
     }
   }

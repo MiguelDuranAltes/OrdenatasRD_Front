@@ -16,5 +16,9 @@ export default {
       }
     });
     return response.data;
+  },
+  async deleteImage(id) {
+    const response = await HTTP.delete(`${resource}/${id}/imagen`);
+    return response.data;
   }
 };
