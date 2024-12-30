@@ -36,12 +36,6 @@
             required
           />
         </div>
-        <div class="mb-3">
-          <button class="btn btn-primary" @click.prevent="iniciarSubidaFichero()">
-            Elegir Imagen
-          </button>
-          <input ref="inputOculto" class="d-none" type="file" @change="cogerImagen()" />
-        </div>
         <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
         <div class="form-group">
           <button type="submit" class="register-button">Registrarse</button>
@@ -57,8 +51,6 @@
 <script>
 import auth from "../common/auth.js";
 import AccountRepository from "@/repositories/AccountRepository.js";
-import ImageRepository from "@/repositories/ImageRepository";
-import { getStore } from "@/common/store";
 
 export default {
   data() {
@@ -66,7 +58,6 @@ export default {
       auxLogin: null,
       auxPass: null,
       auxPassConfirm: null,
-      chosenImage: null,
       errorMessage: null
     };
   },
@@ -92,12 +83,6 @@ export default {
         await AccountRepository.registerAccount(user);
         await this.autenticarme();
         this.$router.push("/products");
-
-        const store = getStore();
-        //console.log("Registrado con Id: " + store.state.user.id);
-        if (this.$refs.inputOculto.files[0]) {
-          await ImageRepository.saveImage(store.state.user.id, this.chosenImage);
-        }
       } catch (e) {
         console.error(e);
         this.errorMessage = e.response?.data?.message || "Error durante el registro.";
@@ -105,13 +90,6 @@ export default {
     },
     async iniciarSubidaFichero() {
       this.$refs.inputOculto.click();
-    },
-    async cogerImagen() {
-      const file = this.$refs.inputOculto.files[0];
-      if (!file) {
-        throw new Error("No se ha seleccionado ningún archivo.");
-      }
-      this.chosenImage = file;
     },
 
     async autenticarme() {

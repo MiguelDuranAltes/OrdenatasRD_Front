@@ -4,7 +4,7 @@
     <div class="user-image">
       <img :src="userImage" alt="User Image" class="profile-image" />
     </div>
-    <div class="fixed-buttons">
+    <div v-if="store.state.user.id === parseInt(this.$route.params.userId)" class="fixed-buttons">
       <button
         class="btn btn-primary"
         @click.prevent="iniciarSubidaFichero()"
@@ -226,7 +226,8 @@ export default {
         cvv: "",
         name: ""
       },
-      errorMessage: null
+      errorMessage: null,
+      store: getStore()
     };
   },
   async mounted() {

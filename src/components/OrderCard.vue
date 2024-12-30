@@ -1,16 +1,19 @@
 <template>
   <div v-if="order" class="card order-card">
     <div class="card-body">
-      <!-- <router-link class="card-title" :to="{ name: 'OrderDetail', params: { orderId: order.id } }">
-            Pedido {{ order.id }}</router-link> 
-  
+      <router-link
+        class="card-title"
+        :to="{ name: 'OrderDetail', params: { userLogin: order.userLogin, orderId: order.id } }"
+      >
+        Pedido {{ order.id }}
+      </router-link>
+      <!--
         <p v-if ="this.isAdmin" class="card-text text-muted">
             Owner
             <router-link :to="{ name: 'UserOrderList', params: { orderId: order.userLogin } }">{{
                 order.userLogin
             }}</router-link> 
         </p> -->
-      <h5 class="card-title">Pedido {{ order.id }}</h5>
 
       <p v-if="this.isAdmin && this.users" class="card-text text-muted">
         Owner
@@ -55,9 +58,7 @@ export default {
       required: false
     }
   },
-  async mounted() {
-    console.log(this.users);
-  },
+  async mounted() {},
   methods: {
     getUserId(login) {
       if (!this.users) {

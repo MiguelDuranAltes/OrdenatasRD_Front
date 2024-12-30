@@ -16,6 +16,7 @@ import NewOrder from "@/components/NewOrder.vue";
 import OrderList from "@/components/OrderList.vue";
 import UserOrderList from "@/components/UserOrderList.vue";
 import UnauthorizedView from "@/views/UnauthorizedView.vue";
+import OrderDetail from "@/components/OrderDetail.vue";
 
 const routes = [
   {
@@ -89,6 +90,11 @@ const routes = [
     name: "UserOrderList",
     component: UserOrderList,
     meta: { authority: "ADMIN" }
+  },
+  {
+    path: "/orders/users/:userLogin/:orderId",
+    name: "OrderDetail",
+    component: OrderDetail
   },
   {
     path: "/unauthorized",
