@@ -219,15 +219,15 @@ export default {
         await OrderRepository.return(returnOrder);
         this.infoPedido = await OrderRepository.findOne(returnOrder.orderId);
       } catch (error) {
-        console.error("Error returning order:", error);
         const errorMessage =
           error.response?.data?.message || "Error inesperado durante la devolución del pedido.";
         alert(errorMessage);
-
-        if (error.response?.data?.message?.includes("Usuario bloqueado por warnings")) {
+        if (
+          error.response?.data?.message?.includes("Usuario bloqueado por acumulación de Warnings")
+        ) {
           alert("Has sido bloqueado. Serás desautenticado.");
-          auth.logout(); // Desautenticar
-          this.$router.push("/"); // Redirigir a la página de inicio de sesión
+          auth.logout();
+          this.$router.push("/");
         } else {
           alert(errorMessage);
         }
