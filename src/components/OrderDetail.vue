@@ -166,17 +166,6 @@ export default {
       }
       return productosTotales;
     },
-    getTotalPrice() {
-      let price = 0;
-      for (const product of this.productos) {
-        for (const cantidad of this.productosYCantidad) {
-          if (product.id == cantidad.productId) {
-            price += product.price * cantidad.quantity;
-          }
-        }
-      }
-      return price;
-    },
     iniciarCancelacion() {
       this.quieroCancelar = true;
     },
@@ -234,6 +223,14 @@ export default {
         const errorMessage =
           error.response?.data?.message || "Error inesperado durante la devolución del pedido.";
         alert(errorMessage);
+
+        if (error.response?.data?.message?.includes("Usuario bloqueado por warnings")) {
+          alert("Has sido bloqueado. Serás desautenticado.");
+          auth.logout(); // Desautenticar
+          this.$router.push("/"); // Redirigir a la página de inicio de sesión
+        } else {
+          alert(errorMessage);
+        }
       }
     }
   }

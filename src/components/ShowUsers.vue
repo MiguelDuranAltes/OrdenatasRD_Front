@@ -18,7 +18,7 @@
         <button v-if="user.blocked" class="btn btn-bloquear" @click="changeBlocked(user)">
           Desbloquear
         </button>
-        <button class="btn btn-eliminar" @click="eliminar(user.id)">Elimina</button>
+        <button class="btn btn-eliminar" @click="eliminar(user.id)">Eliminar</button>
       </div>
     </div>
   </div>
@@ -26,11 +26,13 @@
 
 <script>
 import UsersRepository from "../repositories/UsersRepository";
+import { getStore } from "@/common/store";
 
 export default {
   data() {
     return {
-      users: []
+      users: [],
+      store: getStore()
     };
   },
   async mounted() {
@@ -39,6 +41,7 @@ export default {
     } catch (error) {
       console.log(error);
     }
+    this.users = this.users.filter((user) => user.id !== this.store.state.user.id);
   },
   methods: {
     async changeBlocked(user) {
