@@ -120,7 +120,7 @@
 import OrderRepository from "@/repositories/OrderRepository";
 import ProductRepository from "@/repositories/ProductRepository";
 import auth from "@/common/auth.js";
-
+import { getStore } from "@/common/store";
 export default {
   data() {
     return {
@@ -133,7 +133,8 @@ export default {
       quieroDevolver: false,
       justificacionCancelacion: null,
       justificacionDevolucion: null,
-      isAdmin: auth.isAdmin()
+      isAdmin: auth.isAdmin(),
+      store: getStore()
     };
   },
   async mounted() {
@@ -195,42 +196,38 @@ export default {
       await OrderRepository.update(order);
     },
     async cancellOrder(justificacion) {
-      let today = new Date().toISOString();
       let cancelation = {
         orderId: this.infoPedido.id,
         refund: this.infoPedido.price,
-        date: today,
         text: justificacion,
-        type: "cancelacion"
+        type: "Cancelacion"
       };
       await OrderRepository.cancell(cancelation);
       this.infoPedido = await OrderRepository.findOne(cancelation.orderId);
     },
     async returnOrder(justificacion) {
-      let today = new Date().toISOString();
       let returnOrder = {
         orderId: this.infoPedido.id,
         refund: this.infoPedido.price,
-        date: today,
         text: justificacion,
-        type: "devolucion"
+        type: "Devolucion"
       };
       try {
         await OrderRepository.return(returnOrder);
         this.infoPedido = await OrderRepository.findOne(returnOrder.orderId);
+        if (returnOrder.text === null) this.store.state.user.warnings++;
+
+        if (this.store.state.user.warnings === 3) {
+          alert(
+            "No has especificado devolución, por ello, has sido bloqueado. Serás desautenticado."
+          );
+          auth.logout();
+          this.$router.push("/");
+        }
       } catch (error) {
         const errorMessage =
           error.response?.data?.message || "Error inesperado durante la devolución del pedido.";
         alert(errorMessage);
-        if (
-          error.response?.data?.message?.includes("Usuario bloqueado por acumulación de Warnings")
-        ) {
-          alert("Has sido bloqueado. Serás desautenticado.");
-          auth.logout();
-          this.$router.push("/");
-        } else {
-          alert(errorMessage);
-        }
       }
     }
   }

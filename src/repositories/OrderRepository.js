@@ -28,13 +28,9 @@ export default {
     return applyDate((await HTTP.put(`${resource}/${updatedOrder.id}`, updatedOrder)).data);
   },
   async cancell(cancelation) {
-    return applyDate(
-      (await HTTP.post(`${resource}/${cancelation.orderId}/cancel`, cancelation)).data
-    );
+    await HTTP.post(`${resource}/${cancelation.orderId}/cancel`, cancelation);
   },
   async return(returnedOrder) {
-    return applyDate(
-      (await HTTP.post(`${resource}/${returnedOrder.orderId}/return`, returnedOrder)).data
-    );
+    await HTTP.post(`${resource}/${returnedOrder.orderId}/return`, returnedOrder);
   }
 };

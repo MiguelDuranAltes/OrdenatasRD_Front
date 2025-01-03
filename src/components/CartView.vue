@@ -52,7 +52,6 @@ export default {
   },
   async mounted() {
     this.cart = getStore().state.cart;
-    console.log(this.cart);
     const allProducts = await ProductRepository.findAll();
     this.products = allProducts.filter((product) =>
       this.cart.some((cartItem) => cartItem.productId === product.id)

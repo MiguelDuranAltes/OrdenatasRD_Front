@@ -26,6 +26,7 @@ function logout() {
   getStore().state.user.authority = "";
   getStore().state.user.id = "";
   getStore().state.user.logged = false;
+  getStore().state.user.warnings = null;
 }
 
 function isAdmin() {
@@ -57,6 +58,7 @@ async function _authenticate() {
   store.state.user.authority = response.authority;
   store.state.user.id = response.id;
   store.state.user.logged = true;
+  store.state.user.warnings = response.warnings;
   return store.state.user;
 }
 

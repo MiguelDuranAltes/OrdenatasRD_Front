@@ -8,7 +8,8 @@ const store = ref({
       authority: "",
       login: "",
       id: "",
-      logged: false
+      logged: false,
+      warnings: null
     },
     cart: loadCartFromStorage()
   }
