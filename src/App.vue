@@ -32,7 +32,7 @@
           </li>
           <li class="nav-item">
             <router-link class="btn btn-success btn-sm" style="margin: 5px 20px" :to="'/orders/'">
-              Order List
+              Lista de pedidos
             </router-link>
           </li>
         </ul>

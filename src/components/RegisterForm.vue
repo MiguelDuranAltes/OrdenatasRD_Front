@@ -69,15 +69,19 @@ export default {
         this.errorMessage = "Las contraseñas no coinciden";
         return;
       }
-      if (this.auxLogin.length < 4) {
-        this.errorMessage = "El login de usuario debe tener al menos 4 caracteres";
+      if (this.auxLogin.length < 5) {
+        this.errorMessage = "El login de usuario debe tener al menos 5 caracteres";
         return;
       }
-      if (this.auxPass.length < 4) {
-        this.errorMessage = "La contraseña debe tener al menos 4 caracteres";
+      if (this.auxPass.length < 5) {
+        this.errorMessage = "La contraseña debe tener al menos 5 caracteres";
         return;
       }
-
+      if (!/@#$%&/.test(this.auxPass)) {
+        this.errorMessage =
+          "La contraseña debe contener al menos un caracter especial de @, #, $, % o &";
+        return;
+      }
       try {
         const user = { login: this.auxLogin, password: this.auxPass };
         await AccountRepository.registerAccount(user);

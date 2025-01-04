@@ -215,12 +215,13 @@ export default {
       try {
         await OrderRepository.return(returnOrder);
         this.infoPedido = await OrderRepository.findOne(returnOrder.orderId);
-        if (returnOrder.text === null) this.store.state.user.warnings++;
+        if (returnOrder.text === null) {
+          this.store.state.user.warnings++;
+          alert("No has especificado devolución, por ello, has sido advertido");
+        }
 
         if (this.store.state.user.warnings === 3) {
-          alert(
-            "No has especificado devolución, por ello, has sido bloqueado. Serás desautenticado."
-          );
+          alert("Has llegado al máximo de advertencias, has sido bloqueado");
           auth.logout();
           this.$router.push("/");
         }
