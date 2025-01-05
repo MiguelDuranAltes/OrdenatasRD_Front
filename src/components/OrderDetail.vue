@@ -103,7 +103,7 @@
           <div class="modal-content">
             <textarea
               v-model="justificacionDevolucion"
-              placeholder="Por favor, introduzca su justificación para realizar la cancelación"
+              placeholder="Por favor, introduzca su justificación para realizar la devolución"
             ></textarea>
             <div class="button-container">
               <button class="changeStatus-button" @click="confirmarDevolucion">Aceptar</button>

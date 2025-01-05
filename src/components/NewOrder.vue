@@ -185,6 +185,7 @@
 
 <script>
 import { getStore, clearCart } from "@/common/store";
+import auth from "@/common/auth";
 import ProductRepository from "@/repositories/ProductRepository";
 import AdressesRepository from "@/repositories/AdressesRepository";
 import PaymentMRepository from "@/repositories/PaymentMRepository";
@@ -196,6 +197,7 @@ export default {
       cart: null,
       products: [],
       user: null,
+      isAdmin: auth.isAdmin(),
       payMethods: [],
       adresses: [],
       selectedAdressId: null,
