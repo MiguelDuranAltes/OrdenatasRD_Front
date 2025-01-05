@@ -77,7 +77,7 @@ export default {
         this.errorMessage = "La contraseña debe tener al menos 5 caracteres";
         return;
       }
-      if (!/@#$%&/.test(this.auxPass)) {
+      if (!/[#@$%&]/.test(this.auxPass)) {
         this.errorMessage =
           "La contraseña debe contener al menos un caracter especial de @, #, $, % o &";
         return;
