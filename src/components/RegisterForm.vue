@@ -69,10 +69,6 @@ export default {
         this.errorMessage = "Las contraseñas no coinciden";
         return;
       }
-      if (this.auxLogin.length < 5) {
-        this.errorMessage = "El login de usuario debe tener al menos 5 caracteres";
-        return;
-      }
       if (this.auxPass.length < 5) {
         this.errorMessage = "La contraseña debe tener al menos 5 caracteres";
         return;

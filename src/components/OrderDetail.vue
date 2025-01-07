@@ -1,7 +1,9 @@
 <template>
   <div class="product-detail-container">
     <h3 class="text-center my-4">Order {{ this.$route.params.orderId }}</h3>
-    <h3 v-if="isAdmin && infoPedido" class="text-center my-4">{{ infoPedido.userLogin }}</h3>
+    <h3 v-if="isAdmin && infoPedido && infoPedido.userLogin" class="text-center my-4">
+      {{ infoPedido.userLogin }}
+    </h3>
     <div v-if="pedidoConProductos" class="product-detail">
       <div class="product-info">
         <!--Info Pedido-->

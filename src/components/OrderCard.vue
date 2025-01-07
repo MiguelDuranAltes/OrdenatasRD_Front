@@ -1,21 +1,11 @@
 <template>
   <div v-if="order" class="card order-card">
     <div class="card-body">
-      <router-link
-        class="card-title"
-        :to="{ name: 'OrderDetail', params: { userLogin: order.userLogin, orderId: order.id } }"
-      >
+      <router-link class="card-title" :to="{ name: 'OrderDetail', params: { orderId: order.id } }">
         Pedido {{ order.id }}
       </router-link>
-      <!--
-        <p v-if ="this.isAdmin" class="card-text text-muted">
-            Owner
-            <router-link :to="{ name: 'UserOrderList', params: { orderId: order.userLogin } }">{{
-                order.userLogin
-            }}</router-link> 
-        </p> -->
 
-      <p v-if="this.isAdmin && this.users" class="card-text text-muted">
+      <p v-if="this.isAdmin && this.users && order.userLogin" class="card-text text-muted">
         Owner
         <router-link
           :to="{ name: 'UserOrderList', params: { userId: getUserId(order.userLogin) } }"

@@ -92,7 +92,7 @@ const routes = [
     meta: { authority: "ADMIN" }
   },
   {
-    path: "/orders/users/:userLogin/:orderId",
+    path: "/orders/:orderId",
     name: "OrderDetail",
     component: OrderDetail
   },
