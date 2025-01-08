@@ -46,6 +46,7 @@ export default {
       try {
         await UsersRepository.changeBlock(user);
         this.users = await UsersRepository.findAll();
+        this.users = this.users.filter((user) => user.id !== this.store.state.user.id);
       } catch (error) {
         console.log(error);
       }
@@ -53,7 +54,7 @@ export default {
     async eliminar(id) {
       try {
         await UsersRepository.delete(id);
-        this.users = await UsersRepository.findAll();
+        this.users = this.users.filter((user) => user.id !== id);
       } catch (error) {
         console.log(error);
       }
