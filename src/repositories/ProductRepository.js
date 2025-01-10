@@ -11,7 +11,11 @@ export default {
     return (await HTTP.get(`${resource}/${id}`)).data;
   },
   async save(product) {
-    return (await HTTP.put(`${resource}/${product.id}`, product)).data;
+    if (product.id) {
+      return (await HTTP.put(`${resource}/${product.id}`, product)).data;
+    } else {
+      return (await HTTP.post(`${resource}`, product)).data;
+    }
   },
   async findByBrand(brand) {
     return (await HTTP.get(`${resource}/brand/${brand}`)).data;

@@ -24,6 +24,9 @@
           <span class="label">Stock:</span>
           <span class="value">{{ product.availability }} unidades</span>
         </div>
+        <div class="product-image">
+          <img :src="productImage" alt="User Image" class="prod-image" />
+        </div>
       </div>
 
       <div class="action-buttons">
@@ -51,16 +54,22 @@
 import ProductRepository from "@/repositories/ProductRepository.js";
 import auth from "@/common/auth.js";
 import { addToCart } from "@/common/store";
+import defaultImage from "@/assets/logo.png";
+import { BACKEND_URL } from "@/constants";
 
 export default {
   data() {
     return {
       product: null,
-      isAdmin: auth.isAdmin()
+      isAdmin: auth.isAdmin(),
+      productImage: defaultImage
     };
   },
   async mounted() {
     this.product = await ProductRepository.findOne(this.$route.params.productId);
+    this.productImage = this.product.hasImage
+      ? `${BACKEND_URL}/products/${this.product.id}/imagen`
+      : defaultImage;
   },
   methods: {
     addProductToCart() {
@@ -101,6 +110,18 @@ h1 {
   display: flex;
   flex-direction: column;
   gap: 12px;
+}
+
+.product-image {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.prod-image {
+  width: 150px; /* Tamaño de la imagen */
+  height: 150px;
+  object-fit: cover; /* Ajustar la imagen */
 }
 
 .info-item {

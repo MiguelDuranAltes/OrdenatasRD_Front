@@ -42,6 +42,11 @@ const routes = [
     component: ProductList
   },
   {
+    path: "/products/new",
+    name: "ProductCreate",
+    component: ProductForm
+  },
+  {
     path: "/products/:productId",
     name: "ProductDetail",
     component: ProductDetail

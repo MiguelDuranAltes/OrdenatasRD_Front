@@ -3,6 +3,11 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h1>Lista de productos</h1>
 
+      <div>
+        <router-link class="btn btn-outline-primary" :to="'/products/new'" style="margin: 5px 20px">
+          Crear Producto
+        </router-link>
+      </div>
       <!-- Menú desplegable para ordenar -->
       <div class="dropdown">
         <button

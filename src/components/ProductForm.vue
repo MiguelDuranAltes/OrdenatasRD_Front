@@ -1,6 +1,6 @@
 <template>
-  <div v-if="product" class="container note-form">
-    <h1 class="text-center mb-4">Edición del Producto {{ this.$route.params.productId }}</h1>
+  <div v-if="product || newProduct" class="container note-form">
+    <h1 class="text-center mb-4">{{ newProduct ? "Crear Producto" : "Editar Producto" }}</h1>
     <form @submit.prevent="guardarProducto">
       <div class="form-group">
         <label for="name" class="form-label">Nombre del Producto</label>
@@ -61,6 +61,20 @@
         />
       </div>
 
+      <div class="product-image">
+        <img :src="productImage" alt="Product Image" class="prod-image" />
+      </div>
+      <div class="fixed-buttons">
+        <button
+          class="btn btn-primary"
+          @click.prevent="iniciarSubidaFichero()"
+          style="margin-right: 10px"
+        >
+          Cambiar Imagen
+        </button>
+        <input ref="inputOculto" class="d-none" type="file" @change="actualizarImagen()" />
+      </div>
+
       <div class="text-center mt-4">
         <button type="submit" class="btn btn-primary btn-lg">Guardar Cambios</button>
       </div>
@@ -74,16 +88,29 @@
 
 <script>
 import ProductRepository from "@/repositories/ProductRepository";
+import defaultImage from "@/assets/logo.png";
+import { BACKEND_URL } from "@/constants";
+import ImageProductRepository from "@/repositories/ImageProductRepository";
 
 export default {
   data() {
     return {
-      product: null,
-      errorMessage: null // Para manejar los mensajes de error
+      product: {},
+      newProduct: true,
+      errorMessage: null, // Para manejar los mensajes de error
+      productImage: defaultImage,
+      file: null
     };
   },
   async mounted() {
-    this.product = await ProductRepository.findOne(this.$route.params.productId);
+    if (this.$route.params.productId) {
+      this.newProduct = false;
+      this.product = await ProductRepository.findOne(this.$route.params.productId);
+
+      this.productImage = this.product.hasImage
+        ? `${BACKEND_URL}/products/${this.product.id}/imagen`
+        : defaultImage;
+    }
   },
   methods: {
     async guardarProducto() {
@@ -115,6 +142,12 @@ export default {
 
       try {
         const respuesta = await ProductRepository.save(this.product);
+        if (this.file != null) {
+          await ImageProductRepository.saveImage(respuesta.id, this.file);
+          this.userImage = `${BACKEND_URL}/products/${respuesta.id}/imagen?timestamp=${new Date().getTime()}`;
+        }
+
+        console.log(this.respuesta);
         // Redirigir a la página de detalles del producto después de guardar
         this.$router.push({ name: "ProductDetail", params: { productId: respuesta.id } });
       } catch (e) {
@@ -125,6 +158,23 @@ export default {
         } else {
           this.errorMessage = "Ocurrió un error, por favor intenta de nuevo.";
         }
+      }
+    },
+    async iniciarSubidaFichero() {
+      this.$refs.inputOculto.click();
+    },
+    async actualizarImagen() {
+      try {
+        this.file = this.$refs.inputOculto.files[0];
+        if (!this.file) {
+          throw new Error("No se ha seleccionado ningún archivo.");
+        }
+      } catch (err) {
+        console.error("Error al subir la imagen:", err);
+        this.errorMessage = err.response?.data?.message || "Error al subir la imagen.";
+      } finally {
+        // Limpiar el input
+        this.$refs.inputOculto.value = null;
       }
     }
   }
@@ -139,6 +189,18 @@ export default {
   padding: 30px;
   border-radius: 8px;
   box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+}
+
+.product-image {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.prod-image {
+  width: 150px; /* Tamaño de la imagen */
+  height: 150px;
+  object-fit: cover; /* Ajustar la imagen */
 }
 
 h1 {
