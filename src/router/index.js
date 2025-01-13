@@ -17,6 +17,7 @@ import OrderList from "@/components/OrderList.vue";
 import UserOrderList from "@/components/UserOrderList.vue";
 import UnauthorizedView from "@/views/UnauthorizedView.vue";
 import OrderDetail from "@/components/OrderDetail.vue";
+import WishList from "@/components/WishList.vue";
 
 const routes = [
   {
@@ -78,6 +79,11 @@ const routes = [
     path: "/products/brands/:brand",
     name: "ProductListByBrand",
     component: ProductListByBrand
+  },
+  {
+    path: "/wishlist",
+    name: "Wishlist",
+    component: WishList
   },
   {
     path: "/orders/new",

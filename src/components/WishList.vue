@@ -45,11 +45,7 @@
 
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xxl-4">
       <div class="col mb-3" v-for="product in orderedProducts" :key="product.id">
-        <ProductCard
-          :product="product"
-          :userwishlist="this.userWishlist"
-          @update:wishlist="actualizarWishlist()"
-        ></ProductCard>
+        <ProductCard :product="product" :userwishlist="this.userWishlist"></ProductCard>
       </div>
     </div>
   </div>
@@ -57,24 +53,22 @@
 
 <script>
 import ProductCard from "./ProductCard.vue";
-import ProductRepository from "../repositories/ProductRepository";
 import UsersRepository from "@/repositories/UsersRepository";
 import { getStore } from "@/common/store";
 
 export default {
   data() {
     return {
-      products: [],
-      sort: "Normal",
       userWishlist: {
         wishlist: []
       },
+      sort: "Normal",
       store: getStore()
     };
   },
   computed: {
     orderedProducts() {
-      const productos = [...this.products];
+      const productos = [...this.userWishlist.wishlist];
       if (this.sort === "Asc-Price") {
         return productos.sort((a, b) => a.price - b.price);
       }
@@ -92,15 +86,8 @@ export default {
   },
   components: { ProductCard },
   async mounted() {
-    this.products = await ProductRepository.findAll();
     this.userWishlist = await UsersRepository.getWishlist(this.store.state.user.id);
-  },
-
-  methods: {
-    async actualizarWishlist() {
-      const updatedWishlist = await UsersRepository.getWishlist(this.store.state.user.id);
-      this.userWishlist = { ...updatedWishlist }; // Asignar un nuevo objeto para reactividad
-    }
+    console.log(this.userWishlist);
   }
 };
 </script>

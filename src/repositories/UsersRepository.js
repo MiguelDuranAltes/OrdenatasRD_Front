@@ -31,5 +31,17 @@ export default {
   async delete(id) {
     const response = await HTTP.delete(`${resource}/${id}`);
     return response.data;
+  },
+  async addProduct(id, productId) {
+    const response = await HTTP.post(`${resource}/${id}/wishlist/${productId}`);
+    return response.data;
+  },
+  async removeProduct(id, productId) {
+    const response = await HTTP.delete(`${resource}/${id}/wishlist/${productId}`);
+    return response.data;
+  },
+  async getWishlist(id) {
+    const response = await HTTP.get(`${resource}/${id}/wishlist`);
+    return response.data;
   }
 };

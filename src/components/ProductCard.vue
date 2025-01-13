@@ -31,6 +31,20 @@
         >
           Añadir al carrito
         </button>
+        <button
+          v-if="!productOnList(product.id)"
+          class="btn btn-success btn-sm"
+          @click="addProductToWishlist"
+        >
+          Añadir a favoritos
+        </button>
+        <button
+          v-if="productOnList(product.id)"
+          class="btn btn-success btn-sm"
+          @click="removeProductOffWishlist"
+        >
+          Borrar de favoritos
+        </button>
         <router-link
           v-if="this.isAdmin"
           class="btn btn-warning btn-sm"
@@ -45,12 +59,14 @@
 
 <script>
 import auth from "@/common/auth";
-import { addToCart } from "@/common/store";
+import { addToCart, getStore } from "@/common/store";
+import UsersRepository from "@/repositories/UsersRepository";
 
 export default {
   data() {
     return {
-      isAdmin: auth.isAdmin()
+      isAdmin: auth.isAdmin(),
+      store: getStore()
     };
   },
   props: {
@@ -61,6 +77,10 @@ export default {
     showDetailsButton: {
       type: Boolean,
       default: true
+    },
+    userwishlist: {
+      type: Object,
+      required: true
     }
   },
   methods: {
@@ -68,6 +88,20 @@ export default {
       addToCart(this.product.id); // Llama a la función para añadir el producto al carrito
       alert(`${this.product.name} añadido al carrito.`); //Se podría no hacer el alert y usar un Toast para ello habría que hacer
       //un componente Toast y llamarlo aquí
+    },
+    async addProductToWishlist() {
+      UsersRepository.addProduct(this.store.state.user.id, this.product.id);
+      this.$emit("update:wishlist");
+      alert(`${this.product.name} añadido a la lista de favoritos.`);
+    },
+    async removeProductOffWishlist() {
+      UsersRepository.removeProduct(this.store.state.user.id, this.product.id);
+      this.$emit("update:wishlist");
+      alert(`${this.product.name} borrado de la lista de favoritos.`);
+    },
+    productOnList(productId) {
+      if (this.userwishlist.wishlist.length === 0) return false;
+      return this.userwishlist.wishlist.some((product) => product.id === productId);
     }
   }
 };

@@ -35,6 +35,11 @@
               Lista de pedidos
             </router-link>
           </li>
+          <li class="nav-item">
+            <router-link class="btn btn-success btn-sm" style="margin: 5px 20px" :to="'/wishlist/'">
+              Lista de favoritos
+            </router-link>
+          </li>
         </ul>
         <router-link
           class="nav-link"
