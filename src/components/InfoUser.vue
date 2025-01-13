@@ -290,10 +290,7 @@ export default {
         this.createAdress = false;
         this.adresses = await AdressesRepository.findAll(this.user.id);
       } catch (err) {
-        this.handleError(
-          err,
-          "Ocurrió un error durante la creación de la dirección, inténtelo de nuevo."
-        );
+        this.errorMessage = err.response?.data?.message || "Error al crear el método de pago.";
       }
     },
     tryNewPayment() {
@@ -312,17 +309,14 @@ export default {
           !this.newPayment.cvv ||
           !this.newPayment.name
         ) {
-          this.errorMessage = "Todos los deben completarse.";
+          this.errorMessage = "Todos los campos deben completarse.";
           return;
         }
         await PaymentMRepository.create(this.newPayment);
         this.createPayment = false;
         this.payMethods = await PaymentMRepository.findAll(this.user.id);
       } catch (err) {
-        this.handleError(
-          err,
-          "Ocurrió un error durante la creación del método, inténtelo de nuevo."
-        );
+        this.errorMessage = err.response?.data?.message || "Error al crear el método de pago.";
       }
     },
     async iniciarSubidaFichero() {
